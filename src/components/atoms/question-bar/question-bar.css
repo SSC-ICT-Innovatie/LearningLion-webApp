@@ -1,0 +1,17 @@
+.question-bar{
+  padding: 10px;
+  border: 1px solid #000;
+  border-radius: 15px;
+  display: flex;
+}
+
+.question-bar input{
+  width: 100%;
+  border: none;
+}
+
+.question-bar img{
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}

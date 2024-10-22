@@ -1,0 +1,25 @@
+.from-user{
+    border: 1px solid #000;
+    border-radius: 10px;
+    justify-content: flex-end;
+    align-self: flex-end;
+}
+
+.chat-message{
+  padding: 5px 10px;
+  margin: 10px;
+  max-width: 80%;
+  word-wrap: break-word;
+  display: inline-block;
+
+}
+
+.chat-message__sources-header{
+  display: flex;
+  align-items: center;
+  color: #c9c9c9;
+}
+
+.chat-message__sources__container__source{
+  border-bottom: 1px solid #c9c9c9;
+}
