@@ -3,6 +3,7 @@
   border: 1px solid #000;
   border-radius: 15px;
   display: flex;
+  width: 80%;
 }
 
 .question-bar input{
@@ -14,4 +15,12 @@
   width: 30px;
   height: 30px;
   cursor: pointer;
+}
+.disabled{
+  background-color: #f2f2f2;
+  cursor: not-allowed;
+}
+.question-bar input[disabled]{
+  background-color: transparent;
+  cursor: not-allowed;
 }

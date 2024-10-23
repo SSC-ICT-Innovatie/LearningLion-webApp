@@ -13,6 +13,7 @@ export const ChatMessage = ({fromUser, username, message, sources}:ChatMessagePr
   const [showSources, setShowSources] = useState(false)
 
   const renderSources = () => {
+    if (!sources) return
     return sources.map((source, index) => {
       return <TextElement link={source} key={index} type='chatmessage chat-message__sources__container__source link' onClick={() => console.log(source)}>{source}</TextElement>
     })

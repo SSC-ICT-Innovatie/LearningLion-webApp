@@ -3,7 +3,11 @@ import { TextElement } from '../atoms/TextElement/TextElement'
 import { QuestionBar } from '../atoms/question-bar/question-bar'
 import { SelectBox } from '../molecules/selectbox/selectbox'
 
-export const HomePage = () => {
+interface HomePageProps {
+  onSubmit: (values: {specialty: string, question: string}) => void
+}
+
+export const HomePage = ({onSubmit}: HomePageProps) => {
   const [specialty, setSpecialty] = useState("None")
   return (
     <div>
@@ -16,8 +20,7 @@ export const HomePage = () => {
         <div className='question-section'>
           <TextElement type='mid-heading bold'>Stel je eerste vraag aan Learning Lion</TextElement>
           <QuestionBar onSubmit={(values) => {
-            console.log(`PROMPT:${values}`)
-            console.log(`SPECIALTY: ${specialty}`)
+              onSubmit({specialty: specialty, question: values})
           }
             }/>
         </div>
