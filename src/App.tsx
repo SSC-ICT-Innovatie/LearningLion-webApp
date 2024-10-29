@@ -60,6 +60,13 @@ function App() {
               postRequest(
                 apiUrl, data, {"Content-Type": "application/json"}
               ).then((response) => {
+                if(response.error_message !== null || response.sucess === false || response.result === null || response.status === "failed") {
+                  console.error("Error:", response.error_message)
+                  setAPIcall(false)
+                  setMessages(val => val.concat(createChatMessage(`Een fout is opgetreden: ${response.error_message}`, false)))
+                  return
+                }
+
                 console.log("Response:", response)
                 const resultOutput = response.result.output;
                 console.log("Result Output:", resultOutput);
@@ -72,7 +79,6 @@ function App() {
                 const lastMessage = messages.pop().split('<|im_end|>')[0].trim();
                 console.log("Last AI Message:", lastMessage);
                 setMessages(val => val.concat(createChatMessage(lastMessage, false)))
-                
                 setAPIcall(false)
               })
               .catch((error) => console.error("Error:", error))
