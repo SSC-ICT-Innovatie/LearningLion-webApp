@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Header } from './components/molecules/header/header'
 import { HomePage } from './components/pages/home_page'
 import './App.css'

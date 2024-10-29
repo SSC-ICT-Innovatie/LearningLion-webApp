@@ -1,4 +1,3 @@
-import React from 'react'
 import './TextElement.css'
 
 interface TextProps {

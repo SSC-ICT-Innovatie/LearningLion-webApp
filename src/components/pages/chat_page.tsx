@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { QuestionBar } from "../atoms/question-bar/question-bar";
 import { TextElement } from "../atoms/TextElement/TextElement";
 import { ChatMessage } from "../molecules/chatmessage/chatmessage";

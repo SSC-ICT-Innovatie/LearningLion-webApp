@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import './question-bar.css'
 import sendIcon from '../../../assets/send-black.svg'
 

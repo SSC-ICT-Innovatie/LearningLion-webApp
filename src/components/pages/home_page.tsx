@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { TextElement } from '../atoms/TextElement/TextElement'
 import { QuestionBar } from '../atoms/question-bar/question-bar'
 import { SelectBox } from '../molecules/selectbox/selectbox'

@@ -1,5 +1,4 @@
 import { TextElement } from "../../atoms/TextElement/TextElement"
-import React from 'react'
 import "./header.css"
 
 interface HeaderProps {

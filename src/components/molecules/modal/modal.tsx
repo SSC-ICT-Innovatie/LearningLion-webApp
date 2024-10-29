@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import './modal.css'
 interface ModalProps {
   title: string,

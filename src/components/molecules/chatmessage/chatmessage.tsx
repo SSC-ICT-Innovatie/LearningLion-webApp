@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { TextElement } from '../../atoms/TextElement/TextElement'
 import './chatmessage.css'
 
