@@ -38,6 +38,12 @@ function App() {
   }
 
   const handleMessage = (message:string) => {
+    if(message === "") {
+      return
+    }
+    if(apiToken === "" || apiUrl === "") {
+      return
+    }
     setAPIcall(true)
       setMessages(val => val.concat(
         createChatMessage(message, true)
@@ -98,11 +104,12 @@ function App() {
         {!initalized && <HomePage onSubmit={(values) => {
           setspecialty(values.specialty)
           setInitalized(true)
-          setapiToken(values.apiToken)
-          setApiUrl(values.apiUrl)
           console.log({specialty: values.specialty,question: values.question})
           handleMessage(values.question)
-        }}/>}
+        }}
+        setApiToken={(token) => setapiToken(token)}
+        setApiUrl={(url) => setApiUrl(url)}
+        />}
         {initalized &&
           <ChatPage messages={messages} disabled={APIcall} emptyChat={emptyChat} newMessage={
             (message) => {

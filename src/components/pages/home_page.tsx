@@ -5,14 +5,14 @@ import { SelectBox } from '../molecules/selectbox/selectbox'
 import { Modal } from '../molecules/modal/modal'
 
 interface HomePageProps {
-  onSubmit: (values: {specialty: string, question: string, apiToken: string, apiUrl: string}) => void
+  onSubmit: (values: {specialty: string, question: string}) => void,
+  setApiToken: (token: string) => void,
+  setApiUrl: (url: string) => void
 }
 
-export const HomePage = ({onSubmit}: HomePageProps) => {
+export const HomePage = ({onSubmit, setApiToken, setApiUrl}: HomePageProps) => {
   const [specialty, setSpecialty] = useState("None")
   const [showModal, setshowModal] = useState(true)
-  const [apiToken, setApiToken] = useState("")
-  const [apiUrl, setApiUrl] = useState("")
   return (
     <div>
       {showModal &&
@@ -38,9 +38,7 @@ export const HomePage = ({onSubmit}: HomePageProps) => {
               onSubmit(
                 {
                   specialty: specialty, 
-                  question: values,
-                  apiToken: apiToken,
-                  apiUrl: apiUrl
+                  question: values
                 })
           }
             }/>
