@@ -78,7 +78,22 @@ function App() {
                 const messages = outputText.split('<|im_start|>assistant');
                 const lastMessage = messages.pop().split('<|im_end|>')[0].trim();
                 console.log("Last AI Message:", lastMessage);
-                setMessages(val => val.concat(createChatMessage(lastMessage, false)))
+                
+                const sourcesText = response.result.sources;
+                console.log("Sources Text:", sourcesText);
+                const sourceItems = Array.from(sourcesText.matchAll(/UUID:([^ ]+).*?page_number:(\d+)/g));
+                const sourcesArray = sourceItems.map((match) => {
+                  const matchArray = match as RegExpMatchArray;
+                  return {
+                    UUID: matchArray[1],
+                    page: matchArray[2]
+                  };
+                });
+                const formattedSources = sourcesArray.map(
+                  item => `Document UUID: ${item.UUID}, pagina: ${item.page}`
+                );
+                console.log("Formatted Sources:", formattedSources); 
+                setMessages(val => val.concat(createChatMessage(lastMessage, false, formattedSources)))
                 setAPIcall(false)
               })
               .catch((error) => console.error("Error:", error))
