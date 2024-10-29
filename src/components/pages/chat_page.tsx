@@ -8,9 +8,10 @@ interface chatPageProps {
   messages: chatMessage[]
   newMessage: (message: string) => void
   disabled?: boolean
+  emptyChat: () => void
 }
 
-export const ChatPage = ({messages, newMessage,disabled}:chatPageProps) => {
+export const ChatPage = ({messages, newMessage,disabled,emptyChat}:chatPageProps) => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -22,6 +23,7 @@ export const ChatPage = ({messages, newMessage,disabled}:chatPageProps) => {
   ]);
   return (
     <div className="wrapper">
+      <p onClick={emptyChat}>Verwijder chat</p>
     <div style={{display: 'flex', flexDirection:"column", height:"65vh", overflow:'scroll', padding: "5px 0", margin:"10px 0"}}>
       {
         messages.map((message, index) => {
