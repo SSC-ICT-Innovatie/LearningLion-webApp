@@ -61,7 +61,19 @@ function App() {
                 apiUrl, data, {"Content-Type": "application/json"}
               ).then((response) => {
                 console.log("Response:", response)
-                setMessages(val => val.concat(createChatMessage(response.response, false)))
+                const resultOutput = response.result.output;
+                console.log("Result Output:", resultOutput);
+                const latestMessage = resultOutput.split('<|im_start|>').pop().split('<|im_end|>')[0].trim();
+                console.log("Result Output:", resultOutput);
+                console.log("Latest AI Message:", latestMessage);
+                const outputText = response.result.output;
+                console.log("Result Output:", outputText);
+                const messages = outputText.split('<|im_start|>assistant');
+                const lastMessage = messages.pop().split('<|im_end|>')[0].trim();
+                console.log("Last AI Message:", lastMessage);
+                setMessages(val => val.concat(createChatMessage(lastMessage, false)))
+                
+                setAPIcall(false)
               })
               .catch((error) => console.error("Error:", error))
             }
