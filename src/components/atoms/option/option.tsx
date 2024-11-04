@@ -1,5 +1,4 @@
-
-interface OptionProps {
+export interface OptionProps {
   children: string
   onClick?: () => void
 }
