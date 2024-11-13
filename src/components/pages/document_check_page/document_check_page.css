@@ -1,0 +1,17 @@
+.documentsCheckPage .documentsCheckPage__body .documentsWrapper{
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    padding: 0 30px;
+    width: 40%;
+}
+
+.documentsCheckPage .documentsCheckPage__body{
+    display: flex;
+}
+
+.documentsCheckPage .documentViewerWrapper{
+    max-height: 70vh;
+    overflow: scroll;
+
+}

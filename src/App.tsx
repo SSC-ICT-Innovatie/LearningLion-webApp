@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Header } from './components/molecules/header/header'
 import { HomePage } from './components/pages/home_page'
 import './App.css'
 import { ChatPage } from './components/pages/chat_page'
 import { createChatMessage } from './util/chatMessageFactory'
+import { LocalApiHandler } from './util/localApiHandler'
+import { DocumentCheckPage } from './components/pages/document_check_page/document_check_page'
+import { createFetchDocument, fetchedDocument } from './util/documentFactory'
 
 export interface chatMessage {
   fromUser: boolean
@@ -18,20 +21,23 @@ function App() {
   const [APIcall, setAPIcall] = useState(false)
   const [messages, setMessages] = useState<chatMessage[]>([])
   const [apiToken, setapiToken] = useState("")
-  const [apiUrl, setApiUrl] = useState("")
+  const [apiUrl, setApiUrl] = useState("http://127.0.0.1:5000")
+  const APIhandler = useRef(new LocalApiHandler())
 
-
-  async function postRequest(url = "", data = "", headers = {}) {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        ...headers,
-        Authorization: apiToken,
-      },
-      body: data,
-    });
-    return response.json();
+  const [documentsToCheck, setDocumentsToCheck] = useState<fetchedDocument[]>([])
+  useEffect(() => {
+    APIhandler.current.setApiUrl(apiUrl)
+    APIhandler.current.setApiToken(apiToken)
+    console.log("APIhandler:", APIhandler.current)
   }
+  , [apiUrl, apiToken])
+
+  useEffect(() => {
+    if(documentsToCheck.length > 0) {
+      console.log("Documents Check:", documentsToCheck)
+    }
+  }
+  , [documentsToCheck])
 
   const emptyChat = () => {
     setMessages([])
@@ -49,54 +55,66 @@ function App() {
         createChatMessage(message, true)
     ))
     
-    const data = JSON.stringify({
-      chatlog: messages,
-      prompt: message
-    })
+    APIhandler.current.queryDocuments(message).then((response) => {
+      console.log("Response:", response)
+      const documents = response.documents;
+      console.log("Documents:", documents);
+      const fetchedDocuments = documents.map((document) => {
+        return createFetchDocument(document.text,"",document.metadata["UUID"],document.metadata.source,document.metadata.page_number)
+      })
+      setDocumentsToCheck(fetchedDocuments)
+      setAPIcall(false);
+    }
+    ).catch((error) => console.error("Error:", error));
+
+
+    // const data = JSON.stringify({
+    //   chatlog: messages,
+    //   prompt: message
+    // })
         
     // Using the postRequest function
-    postRequest(
-      apiUrl, data, {"Content-Type": "application/json"}
-    ).then((response) => {
-      if(response.error_message !== null || response.sucess === false || response.result === null || response.status === "failed") {
-        console.error("Error:", response.error_message)
-        setAPIcall(false)
-        setMessages(val => val.concat(createChatMessage(`Een fout is opgetreden: ${response.error_message}`, false)))
-        return
-      }
+  //   postRequest(
+  //     apiUrl, data, {"Content-Type": "application/json"}
+  //   ).then((response) => {
+  //     if(response.error_message !== null || response.sucess === false || response.result === null || response.status === "failed") {
+  //       console.error("Error:", response.error_message)
+  //       setAPIcall(false)
+  //       setMessages(val => val.concat(createChatMessage(`Een fout is opgetreden: ${response.error_message}`, false)))
+  //       return
+  //     }
 
-      console.log("Response:", response)
-      const resultOutput = response.result.output;
-      console.log("Result Output:", resultOutput);
-      const latestMessage = resultOutput.split('<|im_start|>').pop().split('<|im_end|>')[0].trim();
-      console.log("Result Output:", resultOutput);
-      console.log("Latest AI Message:", latestMessage);
-      const outputText = response.result.output;
-      console.log("Result Output:", outputText);
-      const messages = outputText.split('<|im_start|>assistant');
-      const lastMessage = messages.pop().split('<|im_end|>')[0].split(']]')[0].trim();
-      console.log("Last AI Message:", lastMessage);
+  //     console.log("Response:", response)
+  //     const resultOutput = response.result.output;
+  //     console.log("Result Output:", resultOutput);
+  //     const latestMessage = resultOutput.split('<|im_start|>').pop().split('<|im_end|>')[0].trim();
+  //     console.log("Result Output:", resultOutput);
+  //     console.log("Latest AI Message:", latestMessage);
+  //     const outputText = response.result.output;
+  //     console.log("Result Output:", outputText);
+  //     const messages = outputText.split('<|im_start|>assistant');
+  //     const lastMessage = messages.pop().split('<|im_end|>')[0].split(']]')[0].trim();
+  //     console.log("Last AI Message:", lastMessage);
       
-      const sourcesText = response.result.sources;
-      console.log("Sources Text:", sourcesText);
-      const sourceItems = Array.from(sourcesText.matchAll(/UUID:([^ ]+).*?page_number:(\d+)/g));
-      const sourcesArray = sourceItems.map((match) => {
-        const matchArray = match as RegExpMatchArray;
-        return {
-          UUID: matchArray[1],
-          page: matchArray[2]
-        };
-      });
-      const formattedSources = sourcesArray.map(
-        item => `Document UUID: ${item.UUID}, pagina: ${item.page}`
-      );
-      console.log("Formatted Sources:", formattedSources); 
-      setMessages(val => val.concat(createChatMessage(lastMessage, false, formattedSources)))
-      setAPIcall(false)
-    })
-    .catch((error) => console.error("Error:", error))
+  //     const sourcesText = response.result.sources;
+  //     console.log("Sources Text:", sourcesText);
+  //     const sourceItems = Array.from(sourcesText.matchAll(/UUID:([^ ]+).*?page_number:(\d+)/g));
+  //     const sourcesArray = sourceItems.map((match) => {
+  //       const matchArray = match as RegExpMatchArray;
+  //       return {
+  //         UUID: matchArray[1],
+  //         page: matchArray[2]
+  //       };
+  //     });
+  //     const formattedSources = sourcesArray.map(
+  //       item => `Document UUID: ${item.UUID}, pagina: ${item.page}`
+  //     );
+  //     console.log("Formatted Sources:", formattedSources); 
+  //     setMessages(val => val.concat(createChatMessage(lastMessage, false, formattedSources)))
+  //     setAPIcall(false)
+  //   })
+  //   .catch((error) => console.error("Error:", error))
   }
-
   return (
     <>
       <div className='wrapper'>
@@ -110,7 +128,19 @@ function App() {
         setApiToken={(token) => setapiToken(token)}
         setApiUrl={(url) => setApiUrl(url)}
         />}
-        {initalized &&
+        {documentsToCheck.length > 0 && initalized && !APIcall &&
+        <DocumentCheckPage documents={documentsToCheck} apiUrl={apiUrl} onSubmit={(documents) => {
+          console.log("Documents:", documents)
+          setDocumentsToCheck([])
+          setAPIcall(true);
+          APIhandler.current.infereLLM(specialty, documents).then((response) => {
+            console.log("Response:", response)
+            setMessages(val => val.concat(createChatMessage(response.output, false)))
+            setAPIcall(false);
+          }
+          ).catch((error) => console.error("Error:", error));
+        }}/>}
+        {initalized && documentsToCheck.length == 0 &&
           <ChatPage messages={messages} disabled={APIcall} emptyChat={emptyChat} newMessage={
             (message) => {
               handleMessage(message)
