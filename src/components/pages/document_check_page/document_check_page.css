@@ -13,5 +13,9 @@
 .documentsCheckPage .documentViewerWrapper{
     max-height: 70vh;
     overflow: scroll;
+}
 
+.documentsWrapper {
+    max-height: 70vh;
+    overflow: scroll;
 }

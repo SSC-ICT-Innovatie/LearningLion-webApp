@@ -1,5 +1,10 @@
 import { fetchedDocument } from "./documentFactory";
 
+interface LLMFiles {
+  uuid: string;
+  question_number: string;
+}
+
 export class LocalApiHandler {
   static apiUrl = "";
   static apiToken = "";
@@ -36,6 +41,13 @@ export class LocalApiHandler {
   async infereLLM(query: string, documents: fetchedDocument[]) {
     console.log(`Infering LLM for query: ${query}`);
     console.log(`url: ${LocalApiHandler.apiUrl}`);
+    const llmFiles: LLMFiles[] = [];
+    documents.forEach((doc) => {
+      llmFiles.push({
+        uuid: doc.uuid,
+        question_number: doc.question_number,
+      });
+    });
     const body = {
       prompt: query,
       files: documents,

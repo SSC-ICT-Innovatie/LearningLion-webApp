@@ -28,9 +28,10 @@ export const DocumentCheckPage = ({documents, apiUrl, onSubmit}: DocumentCheckPa
                             console.log('Open document with uuid:', uuid)
                             setPdfUrl(apiUrl + '/document?uuid=' + uuid)
                         }}
-                        onDelete={(uuid) => {
-                            console.log('Delete document with uuid:', uuid)
-                            setDocs(docs.filter((doc) => doc.uuid !== uuid))
+                        onDelete={(id) => {
+                            console.log('Delete chunk with id:', id)
+                            setDocs(docs.filter((doc) => doc.id !== id))
+                            // setDocs(docs.filter((doc) => doc.uuid !== uuid))
                         }}
                     />
                 })}

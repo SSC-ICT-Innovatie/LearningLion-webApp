@@ -59,8 +59,10 @@ function App() {
       console.log("Response:", response)
       const documents = response.documents;
       console.log("Documents:", documents);
-      const fetchedDocuments = documents.map((document) => {
-        return createFetchDocument(document.text,"",document.metadata["UUID"],document.metadata.source,document.metadata.page_number)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const fetchedDocuments = documents.map((document: { metadata: { [key: string]: any }, text: string }, index: number) => {
+        console.log(`Document ${index}: ${JSON.stringify(document)}`);
+        return createFetchDocument(document.metadata["subject"], "", document.metadata["UUID"], document.metadata.source, document.metadata.page_number, document.text, index, document.metadata["question_number"])
       })
       setDocumentsToCheck(fetchedDocuments)
       setAPIcall(false);
