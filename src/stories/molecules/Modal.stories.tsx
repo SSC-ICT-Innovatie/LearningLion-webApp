@@ -12,7 +12,7 @@ const meta: Meta<typeof Modal> = {
   args: {
     title: 'API Configuratie',
     description: 'Voer je API token en URL in om verder te gaan.',
-    onSubmit: (token: string, url: string) => alert(`Token: ${token}\nURL: ${url}`),
+    onSubmit: () => alert('Submitted'),
   },
 } satisfies Meta<typeof Modal>;
 
