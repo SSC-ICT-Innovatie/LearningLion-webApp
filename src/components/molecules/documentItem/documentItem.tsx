@@ -1,3 +1,4 @@
+import {Button} from "../../atoms/button/Button"
 import { fetchedDocument } from "../../../util/documentFactory"
 import { TextElement } from "../../atoms/TextElement/TextElement"
 import './documentItem.css'
@@ -15,7 +16,7 @@ export const DocumentItem = ({ document, onDelete, onClick }: DocumentItemProps)
                 <TextElement type={"small gray subtitle"}>{document.subject}</TextElement>
                 <TextElement type={"medium black content"}>{document.text}</TextElement>
             </div>
-            <button onClick={() => onDelete(document.id)}>X</button>
+            <Button purpose="delete" onClick={() => onDelete(document.id)}><span>X</span></Button>
         </div>
     )
 }

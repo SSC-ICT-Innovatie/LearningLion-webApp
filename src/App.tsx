@@ -23,6 +23,8 @@ function App() {
   const [apiToken, setapiToken] = useState("")
   const [apiUrl, setApiUrl] = useState("http://127.0.0.1:5000")
   const APIhandler = useRef(new LocalApiHandler())
+  const [errorOccured, setErrorOccured] = useState(false)
+  const [DocumentsChecked, setDocumentsChecked] = useState<fetchedDocument[]>([])
 
   const [documentsToCheck, setDocumentsToCheck] = useState<fetchedDocument[]>([])
   useEffect(() => {
@@ -47,11 +49,11 @@ function App() {
     if(message === "") {
       return
     }
-    if(apiToken === "" || apiUrl === "") {
+    if(apiUrl === "") {
       return
     }
     setAPIcall(true)
-      setMessages(val => val.concat(
+    setMessages(val => val.concat(
         createChatMessage(message, true)
     ))
     
@@ -68,54 +70,22 @@ function App() {
       setAPIcall(false);
     }
     ).catch((error) => console.error("Error:", error));
+  }
 
-
-    // const data = JSON.stringify({
-    //   chatlog: messages,
-    //   prompt: message
-    // })
-        
-    // Using the postRequest function
-  //   postRequest(
-  //     apiUrl, data, {"Content-Type": "application/json"}
-  //   ).then((response) => {
-  //     if(response.error_message !== null || response.sucess === false || response.result === null || response.status === "failed") {
-  //       console.error("Error:", response.error_message)
-  //       setAPIcall(false)
-  //       setMessages(val => val.concat(createChatMessage(`Een fout is opgetreden: ${response.error_message}`, false)))
-  //       return
-  //     }
-
-  //     console.log("Response:", response)
-  //     const resultOutput = response.result.output;
-  //     console.log("Result Output:", resultOutput);
-  //     const latestMessage = resultOutput.split('<|im_start|>').pop().split('<|im_end|>')[0].trim();
-  //     console.log("Result Output:", resultOutput);
-  //     console.log("Latest AI Message:", latestMessage);
-  //     const outputText = response.result.output;
-  //     console.log("Result Output:", outputText);
-  //     const messages = outputText.split('<|im_start|>assistant');
-  //     const lastMessage = messages.pop().split('<|im_end|>')[0].split(']]')[0].trim();
-  //     console.log("Last AI Message:", lastMessage);
-      
-  //     const sourcesText = response.result.sources;
-  //     console.log("Sources Text:", sourcesText);
-  //     const sourceItems = Array.from(sourcesText.matchAll(/UUID:([^ ]+).*?page_number:(\d+)/g));
-  //     const sourcesArray = sourceItems.map((match) => {
-  //       const matchArray = match as RegExpMatchArray;
-  //       return {
-  //         UUID: matchArray[1],
-  //         page: matchArray[2]
-  //       };
-  //     });
-  //     const formattedSources = sourcesArray.map(
-  //       item => `Document UUID: ${item.UUID}, pagina: ${item.page}`
-  //     );
-  //     console.log("Formatted Sources:", formattedSources); 
-  //     setMessages(val => val.concat(createChatMessage(lastMessage, false, formattedSources)))
-  //     setAPIcall(false)
-  //   })
-  //   .catch((error) => console.error("Error:", error))
+  const callLlm = (query: string ,documents: fetchedDocument[]) => {
+    APIhandler.current.infereLLM(query, documents).then((response) => {
+      console.log("Response:", response)
+      if(response === false) {
+        setErrorOccured(true)
+        setAPIcall(false);
+      }
+      else{
+        setErrorOccured(false)
+        setMessages(val => val.concat(createChatMessage(response.output, false)))
+        setAPIcall(false);
+      }
+    }
+    ).catch((error) => console.error("Error:", error));
   }
   return (
     <>
@@ -135,18 +105,21 @@ function App() {
           console.log("Documents:", documents)
           setDocumentsToCheck([])
           setAPIcall(true);
-          APIhandler.current.infereLLM(specialty, documents).then((response) => {
-            console.log("Response:", response)
-            setMessages(val => val.concat(createChatMessage(response.output, false)))
-            setAPIcall(false);
-          }
-          ).catch((error) => console.error("Error:", error));
+          setDocumentsChecked(documents)
+          callLlm(messages.at(messages.length-1)?.message ?? "", documents)
         }}/>}
         {initalized && documentsToCheck.length == 0 &&
           <ChatPage messages={messages} disabled={APIcall} emptyChat={emptyChat} newMessage={
             (message) => {
               handleMessage(message)
+              setErrorOccured(false)
+              setDocumentsChecked([])
             }
+            } errorOccured={errorOccured} retryFailure={
+              () => {
+                setErrorOccured(false)
+                callLlm(messages.at(messages.length-1)?.message ?? "", DocumentsChecked)
+              }
             }/>
         }
       </div>
