@@ -52,6 +52,7 @@ export class LocalApiHandler {
       prompt: query,
       files: documents,
     };
+    try{
     const response = await fetch(`${LocalApiHandler.apiUrl}/llm`, {
       method: "POST",
       headers: {
@@ -59,10 +60,17 @@ export class LocalApiHandler {
         Authorization: `Bearer ${LocalApiHandler.apiToken}`,
       },
       body: JSON.stringify(body),
-    });
+    }
+  );
+
     const data = await response.json();
     console.log(`Inferred LLM:`, data);
     return data;
+  }
+  catch (error) {
+    console.log(error)
+    return false
+  }
   }
 
   // General Pipeline

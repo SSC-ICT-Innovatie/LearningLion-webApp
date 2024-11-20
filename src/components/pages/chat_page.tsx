@@ -3,15 +3,18 @@ import { QuestionBar } from "../atoms/question-bar/question-bar";
 import { TextElement } from "../atoms/TextElement/TextElement";
 import { ChatMessage } from "../molecules/chatmessage/chatmessage";
 import { chatMessage } from "../../App";
+import { Button } from '../atoms/button/Button';
 
 interface chatPageProps {
   messages: chatMessage[]
   newMessage: (message: string) => void
   disabled?: boolean
   emptyChat: () => void
+  errorOccured?: boolean
+  retryFailure: () => void
 }
 
-export const ChatPage = ({messages, newMessage,disabled,emptyChat}:chatPageProps) => {
+export const ChatPage = ({messages, newMessage,disabled,emptyChat, errorOccured, retryFailure}:chatPageProps) => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -21,6 +24,7 @@ export const ChatPage = ({messages, newMessage,disabled,emptyChat}:chatPageProps
   }
   ,[messages
   ]);
+  
   return (
     <div className="wrapper">
       <p onClick={emptyChat}>Verwijder chat</p>
@@ -34,6 +38,10 @@ export const ChatPage = ({messages, newMessage,disabled,emptyChat}:chatPageProps
 
     </div>
     {disabled && <TextElement type='small bold left'>Learning Lion is aan het typen...</TextElement>}
+    {errorOccured && <div>
+      <TextElement type='small bold left'>Excuus er is een fout opgetreden</TextElement>
+      <Button onClick={retryFailure} >Probeer het opnieuw</Button>
+    </div>}
     <QuestionBar disabled={disabled} onSubmit={(values) => {
       newMessage(values)
     }}/>

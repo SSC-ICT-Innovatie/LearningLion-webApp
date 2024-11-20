@@ -8,13 +8,18 @@ pdfjs.GlobalWorkerOptions.workerSrc = `./pdf.worker.mjs`;
 
 interface PdfViewerProps {
   url: string
+  onLoaded?: () => void
 }
 
-export const PdfViewer = ({ url }: PdfViewerProps) => {
+export const PdfViewer = ({ url, onLoaded }: PdfViewerProps) => {
   const [numPages, setNumPages] = useState<number>(0);
-  const [scale] = useState(1.0);
+  const [scale] = useState(1);
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    console.log("Document loaded successfully");
+    if(onLoaded) {
+      onLoaded();
+    }
     setNumPages(numPages);
   };
 
