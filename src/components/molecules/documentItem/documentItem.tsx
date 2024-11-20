@@ -1,7 +1,7 @@
 import {Button} from "../../atoms/button/Button"
 import { fetchedDocument } from "../../../util/documentFactory"
 import { TextElement } from "../../atoms/TextElement/TextElement"
-import './documentItem.css'
+import './documentitem.css'
 
 interface DocumentItemProps {
     document: fetchedDocument,
