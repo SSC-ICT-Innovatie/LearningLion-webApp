@@ -18,7 +18,7 @@ function ChatMessage({ fromUser, username, message, sources }: ChatMessageProps)
         link={source}
         key={source}
         type="chatmessage chat-message__sources__container__source link"
-        onClick={() => console.log(source)}>
+        onClick={() => {}}>
         {source}
       </TextElement>
     ));

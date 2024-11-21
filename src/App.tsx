@@ -80,7 +80,7 @@ function App() {
         setDocumentsToCheck(fetchedDocuments);
         setAPIcall(false);
       })
-      .catch((error) => console.error('Error:', error));
+      .catch((_error) => {});
   };
 
   const callLlm = (query: string, documents: fetchedDocument[]) => {
@@ -96,7 +96,7 @@ function App() {
           setAPIcall(false);
         }
       })
-      .catch((error: Error) => console.error('Error:', error));
+      .catch((_error: Error) => {});
   };
   return (
     <div className="wrapper">
@@ -120,7 +120,6 @@ function App() {
           documents={documentsToCheck}
           apiUrl={apiUrl}
           onSubmit={(documents: fetchedDocument[]) => {
-            console.log('Documents:', documents);
             setDocumentsToCheck([]);
             setAPIcall(true);
             setDocumentsChecked(documents);
