@@ -4,33 +4,64 @@ import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
 // Set the workerSrc to a CDN-hosted version to avoid file resolution issues
-pdfjs.GlobalWorkerOptions.workerSrc = `./pdf.worker.mjs`;
+pdfjs.GlobalWorkerOptions.workerSrc = './pdf.worker.mjs';
 
 interface PdfViewerProps {
-  url: string
-  onLoaded?: () => void
+  url: string;
+  onLoaded?: () => void;
 }
 
-export const PdfViewer = ({ url, onLoaded }: PdfViewerProps) => {
+function PdfViewer({ url, onLoaded }: PdfViewerProps) {
   const [numPages, setNumPages] = useState<number>(0);
   const [scale] = useState(1);
 
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    console.log("Document loaded successfully");
-    if(onLoaded) {
+  const onDocumentLoadSuccess = ({ numPages: loadedNumPages }: { numPages: number }) => {
+    if (onLoaded) {
       onLoaded();
     }
-    setNumPages(numPages);
+    setNumPages(loadedNumPages);
   };
+  const renderErrorpdf = () => (
+    <div>
+      <p>Er is iets fout gegaan bij het laden van de pdf.</p>
+      <p>Probeer het later opnieuw.</p>
+    </div>
+  );
 
+  const renderLoadingpdf = () => (
+    <div>
+      <p>De pdf is aan het laden.</p>
+    </div>
+  );
+  const renderNopdf = () => (
+    <div>
+      <p>Er is geen pdf geselecteerd.</p>
+    </div>
+  );
   return (
-    <div style={{ flex: 1, borderLeft: '1px solid #ccc' }}>
-      <Document file={url} onLoadSuccess={onDocumentLoadSuccess}>
+    <div style={{ flex: 1 }}>
+      <Document
+        className="custom-pdf-document"
+        file={url}
+        onLoadSuccess={onDocumentLoadSuccess}
+        error={renderErrorpdf}
+        loading={renderLoadingpdf}
+        noData={renderNopdf}>
         {/* Render all pages by mapping through each page number */}
         {Array.from(new Array(numPages), (_, index) => (
-          <Page key={`page_${index + 1}`} pageNumber={index + 1} scale={scale} />
+          <Page
+            key={`page_${index + 1}`}
+            pageNumber={index + 1}
+            scale={scale}
+          />
         ))}
       </Document>
     </div>
   );
+}
+
+PdfViewer.defaultProps = {
+  onLoaded: () => {},
 };
+
+export default PdfViewer;

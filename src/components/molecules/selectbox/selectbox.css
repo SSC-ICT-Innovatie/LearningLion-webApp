@@ -1,18 +1,18 @@
-.select-box{
+.select-box {
   border: 1px solid #000;
   border-radius: 5px;
   position: relative;
   padding: 15px;
 }
 
-.select-box .container{
+.select-box .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 10px;
 }
 
-.select-box .options_wrapper{
+.select-box .options_wrapper {
   left: -1px;
   visibility: hidden;
   position: absolute;
@@ -22,14 +22,14 @@
   border: 1px solid #000;
   border-radius: 5px;
 }
-.select-box .options_wrapper.active{
+.select-box .options_wrapper.active {
   visibility: visible;
 }
 
-.select-box .options_wrapper .option{
+.select-box .options_wrapper .option {
   padding: 5px;
   cursor: pointer;
 }
-.select-box .options_wrapper .option:hover{
+.select-box .options_wrapper .option:hover {
   background-color: #f0f0f0;
 }

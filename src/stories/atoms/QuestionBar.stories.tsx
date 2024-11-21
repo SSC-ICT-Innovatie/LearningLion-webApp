@@ -2,7 +2,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
 
-import { QuestionBar } from '../../components/atoms/question-bar/question-bar';
+import QuestionBar from '../../components/atoms/question-bar/question-bar';
 
 const meta: Meta<typeof QuestionBar> = {
   title: 'Atoms/QuestionBar',

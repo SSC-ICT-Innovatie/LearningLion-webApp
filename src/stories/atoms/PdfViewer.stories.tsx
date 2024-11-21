@@ -1,6 +1,6 @@
 // src/components/PdfViewer/PdfViewer.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import { PdfViewer } from '../../components/atoms/pdfViewer/PdfViewer';
+import PdfViewer from '../../components/atoms/pdfViewer/PdfViewer';
 
 const meta: Meta<typeof PdfViewer> = {
   title: 'Components/PdfViewer',

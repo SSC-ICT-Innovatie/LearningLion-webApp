@@ -1,11 +1,17 @@
-import { chatMessage } from "../App"
+import { chatMessage } from '../App.tsx';
 
-export const createChatMessage = (message: string, fromUser?:boolean, sources?:string[]): chatMessage => {
+const generateUniqueId = (): string => `_${Math.random().toString(36).substr(2, 9)}`;
 
-  return {
-    fromUser: fromUser ? fromUser : false,
-    message: message,
-    username: fromUser ? "Jij" : "Learning Lion (genAI)",
-    sources: sources ? sources : []
-  }
-}
+const createChatMessage = (
+  message: string,
+  fromUser?: boolean,
+  sources?: string[],
+): chatMessage => ({
+  id: generateUniqueId(),
+  message,
+  username: fromUser ? 'Jij' : 'Learning Lion (genAI)',
+  sources: sources || [],
+  fromUser: fromUser || false,
+});
+
+export default createChatMessage;

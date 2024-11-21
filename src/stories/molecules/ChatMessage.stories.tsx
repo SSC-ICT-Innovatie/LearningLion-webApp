@@ -1,7 +1,7 @@
 // src/components/molecules/chatmessage/ChatMessage.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import { ChatMessage } from '../../components/molecules/chatmessage/chatmessage';
-import { createChatMessage } from '../../util/chatMessageFactory';
+import ChatMessage from '../../components/molecules/chatmessage/chatmessage';
+import createChatMessage from '../../util/chatMessageFactory';
 
 const meta: Meta<typeof ChatMessage> = {
   title: 'Molecules/ChatMessage',
@@ -21,7 +21,10 @@ const meta: Meta<typeof ChatMessage> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const messageAI = createChatMessage('Here is the information you requested.', false, ['https://example.com', 'https://example.org']);
+const messageAI = createChatMessage('Here is the information you requested.', false, [
+  'https://example.com',
+  'https://example.org',
+]);
 const messageUser = createChatMessage('Can you provide more details on the topic?', true);
 
 export const FromAI: Story = {

@@ -2,7 +2,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
 
-import { TextElement } from '../../components/atoms/TextElement/TextElement';
+import TextElement from '../../components/atoms/TextElement/TextElement';
 
 const meta: Meta<typeof TextElement> = {
   title: 'Atoms/TextElement',

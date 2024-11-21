@@ -1,6 +1,6 @@
 // src/components/molecules/header/Header.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import { Header } from '../../components/molecules/header/header';
+import Header from '../../components/molecules/header/header';
 
 const meta: Meta<typeof Header> = {
   title: 'Molecules/Header',

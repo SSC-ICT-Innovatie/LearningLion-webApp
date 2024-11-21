@@ -1,4 +1,4 @@
-.question-bar{
+.question-bar {
   padding: 10px;
   border: 1px solid #000;
   border-radius: 15px;
@@ -6,21 +6,21 @@
   width: 80%;
 }
 
-.question-bar input{
+.question-bar input {
   width: 100%;
   border: none;
 }
 
-.question-bar img{
+.question-bar img {
   width: 30px;
   height: 30px;
   cursor: pointer;
 }
-.disabled{
+.disabled {
   background-color: #f2f2f2;
   cursor: not-allowed;
 }
-.question-bar input[disabled]{
+.question-bar input[disabled] {
   background-color: transparent;
   cursor: not-allowed;
 }

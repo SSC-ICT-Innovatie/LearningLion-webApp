@@ -1,12 +1,39 @@
 // src/components/pages/document_check_page/DocumentCheckPage.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import { DocumentCheckPage } from '../../components/pages/document_check_page/document_check_page';
+import DocumentCheckPage from '../../components/pages/document_check_page/document_check_page';
 import { fetchedDocument } from '../../util/documentFactory';
 
 const mockDocuments: fetchedDocument[] = [
-  { uuid: '1', subject: 'Subject 1', url: 'https://example.com/1', source: 'Source 1', page: 1, id: 1, text: 'Sample text 1', question_number: "1" },
-  { uuid: '2', subject: 'Subject 2', url: 'https://example.com/2', source: 'Source 2', page: 2, id: 2, text: 'Sample text 2', question_number: "2" },
-  { uuid: '3', subject: 'Subject 3', url: 'https://example.com/3', source: 'Source 3', page: 3, id: 3, text: 'Sample text 3', question_number: "3" },
+  {
+    uuid: '1',
+    subject: 'Subject 1',
+    url: 'https://example.com/1',
+    source: 'Source 1',
+    page: 1,
+    id: 1,
+    text: 'Sample text 1',
+    questionNumber: '1',
+  },
+  {
+    uuid: '2',
+    subject: 'Subject 2',
+    url: 'https://example.com/2',
+    source: 'Source 2',
+    page: 2,
+    id: 2,
+    text: 'Sample text 2',
+    questionNumber: '2',
+  },
+  {
+    uuid: '3',
+    subject: 'Subject 3',
+    url: 'https://example.com/3',
+    source: 'Source 3',
+    page: 3,
+    id: 3,
+    text: 'Sample text 3',
+    questionNumber: '3',
+  },
 ];
 const meta: Meta<typeof DocumentCheckPage> = {
   title: 'Pages/DocumentCheckPage',
@@ -31,7 +58,18 @@ export const Default: Story = {
 
 export const WithOneDocument: Story = {
   args: {
-    documents: [{ uuid: '1', subject: 'Single Document', url: 'https://example.com/1', source: 'Single Source', page: 1, id: 1, text: 'Sample text', question_number: "1" }],
+    documents: [
+      {
+        uuid: '1',
+        subject: 'Single Document',
+        url: 'https://example.com/1',
+        source: 'Single Source',
+        page: 1,
+        id: 1,
+        text: 'Sample text',
+        questionNumber: '1',
+      },
+    ],
   },
 };
 
