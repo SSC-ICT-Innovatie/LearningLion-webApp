@@ -1,6 +1,6 @@
 // src/components/pages/chatpage/ChatPage.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import { ChatPage } from '../../components/pages/chat_page';
+import ChatPage from '../../components/pages/chat_page';
 
 const meta: Meta<typeof ChatPage> = {
   title: 'Pages/ChatPage',
@@ -11,8 +11,20 @@ const meta: Meta<typeof ChatPage> = {
   },
   args: {
     messages: [
-      { fromUser: true, message: 'Hallo, kan ik wat informatie krijgen over veiligheid?', username: 'Gebruiker', sources: [] },
-      { fromUser: false, message: 'Natuurlijk! Ik help je graag verder met veiligheid.', username: 'Learning Lion', sources: ['https://example.com'] },
+      {
+        fromUser: true,
+        message: 'Hallo, kan ik wat informatie krijgen over veiligheid?',
+        username: 'Gebruiker',
+        sources: [],
+        id: ''
+      },
+      {
+        fromUser: false,
+        message: 'Natuurlijk! Ik help je graag verder met veiligheid.',
+        username: 'Learning Lion',
+        sources: ['https://example.com'],
+        id: ''
+      },
     ],
     newMessage: (message: string) => alert(`Nieuw bericht: ${message}`),
     disabled: false,

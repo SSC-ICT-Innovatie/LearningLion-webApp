@@ -1,6 +1,6 @@
 // src/components/pages/homepage/HomePage.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import { HomePage } from '../../components/pages/home_page';
+import HomePage from '../../components/pages/home_page';
 
 const meta: Meta<typeof HomePage> = {
   title: 'Pages/HomePage',
@@ -10,7 +10,7 @@ const meta: Meta<typeof HomePage> = {
     layout: 'fullscreen',
   },
   args: {
-    onSubmit: (values: { specialty: string, question: string }) => alert(`Specialty: ${values.specialty}, Question: ${values.question}`),
+    onSubmit: (values: {specialty: string; question: string}) => alert(`Specialty: ${values.specialty}, Question: ${values.question}`),
     setApiToken: (token: string) => alert(`API Token: ${token}`),
     setApiUrl: (url: string) => alert(`API URL: ${url}`),
   },
@@ -26,14 +26,12 @@ export const Default: Story = {
 export const WithoutModal: Story = {
   args: {},
   decorators: [
-    () => {
-      return <HomePage onSubmit={alert} setApiToken={alert} setApiUrl={alert} />;
-    },
+    () => <HomePage onSubmit={alert} setApiToken={alert} setApiUrl={alert} />,
   ],
 };
 
 export const WithSpecialtySelected: Story = {
   args: {
-    onSubmit: ({ specialty, question }) => alert(`Selected Specialty: ${specialty}\nQuestion: ${question}`),
+    onSubmit: ({ specialty, question }: { specialty: string; question: string }) => alert(`Selected Specialty: ${specialty}\nQuestion: ${question}`),
   },
 };

@@ -1,23 +1,54 @@
-import { useState } from 'react'
-import './question-bar.css'
-import sendIcon from '../../../assets/send-black.svg'
+import { useState } from 'react';
+import './question-bar.css';
+import sendIcon from '../../../assets/send-black.svg';
 
 interface QuestionBarProps {
-  onSubmit: (values: string) => void
-  disabled?: boolean
+  onSubmit: (values: string) => void;
+  disabled?: boolean;
 }
 
-export const QuestionBar = ({onSubmit, disabled}:QuestionBarProps) => {
-  const [question, setquestion] = useState("")
+function QuestionBar({ onSubmit, disabled }: QuestionBarProps) {
+  const [question, setquestion] = useState('');
+
+  const handleSubmit = () => {
+    if (question === '') return;
+    if (disabled) return;
+    onSubmit(question);
+    setquestion('');
+  };
+
   return (
-    <div className={`question-bar ${disabled && "disabled"}`}>
-      <input type="text" placeholder='Schrijf hier je vraag' value={question} onChange={(val) => setquestion(val.target.value)} disabled={disabled}/>
-      <img src={sendIcon} alt='verstuur icoon' onClick={()=>{
-        if(question === "") return
-        if(disabled) return
-        onSubmit(question)
-        setquestion("")
-      }}/>
+    <div className={`question-bar ${disabled && 'disabled'}`}>
+      <input
+        type="text"
+        placeholder="Schrijf hier je vraag"
+        value={question}
+        onChange={(val) => setquestion(val.target.value)}
+        disabled={disabled}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') handleSubmit();
+        }}
+      />
+      <button
+        type="button"
+        aria-label="verstuur vraag"
+        onClick={handleSubmit}
+        disabled={disabled}
+        style={{
+          background: `url(${sendIcon}) no-repeat center center`,
+          backgroundSize: 'contain',
+          border: 'none',
+          width: '24px',
+          height: '24px',
+          cursor: 'pointer',
+        }}
+      />
     </div>
-  )
+  );
 }
+
+QuestionBar.defaultProps = {
+  disabled: false,
+};
+
+export default QuestionBar;

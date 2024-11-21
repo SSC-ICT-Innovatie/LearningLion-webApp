@@ -2,7 +2,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from '@storybook/test';
 
-import { Option } from '../../components/atoms/option/option';
+import Option from '../../components/atoms/option/option';
 // import type { OptionProps } from '../../components/atoms/option/option';
 
 const meta: Meta<typeof Option> = {

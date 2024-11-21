@@ -1,0 +1,18 @@
+.custom-pdf-document {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  width: fit-content;
+  text-align: center;
+  border: none;
+  height: 100%;
+}
+
+.custom-pdf-document p {
+  text-align: center;
+}
+.custom-pdf-document div {
+  border: none;
+  text-align: center;
+}

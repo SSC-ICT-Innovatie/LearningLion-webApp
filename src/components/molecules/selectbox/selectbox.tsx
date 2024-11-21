@@ -1,51 +1,58 @@
-import React, { useEffect, useState } from 'react'
-import './selectbox.css'
-import { Option } from '../../atoms/option/option'
-import { TextElement } from '../../atoms/TextElement/TextElement'
+import { useEffect, useState, JSX } from 'react';
+import './selectbox.css';
+import Option from '../../atoms/option/option.tsx';
+import TextElement from '../../atoms/TextElement/TextElement.tsx';
 
 interface SelectBoxProps {
-  options: string[]
-  placeholder: string
-  onSubmit: (values: string) => void
+  options: string[];
+  placeholder: string;
+  onSubmit: (values: string) => void;
 }
 
-export const SelectBox = ({ options, placeholder,onSubmit }: SelectBoxProps): JSX.Element => {
-  const [showOptions, setshowOptions] = useState(false)
-  const [selectedItem, setSelectedItem] = useState("")
+function SelectBox({ options, placeholder, onSubmit }: SelectBoxProps): JSX.Element {
+  const [showOptions, setshowOptions] = useState(false);
+  const [selectedItem, setSelectedItem] = useState('');
 
   useEffect(() => {
-    onSubmit(selectedItem)
-  }, [onSubmit, selectedItem])
-  
+    onSubmit(selectedItem);
+  }, [onSubmit, selectedItem]);
 
   const handleClick = () => {
-    console.log("Click")
-    setshowOptions(!showOptions)
-  }
-  const renderOptions = () => {
-    return options.map((option: string, index: React.Key | null | undefined) => {
-      return <Option key={index} onClick={() => { setSelectedItem(option) }}>{option}</Option>
-    })
-  }
+    setshowOptions(!showOptions);
+  };
+  const renderOptions = () =>
+    options.map((option: string) => (
+      <Option
+        key={option}
+        onClick={() => {
+          setSelectedItem(option);
+        }}>
+        {option}
+      </Option>
+    ));
 
   return (
-    <div className="select-box" onClick={handleClick}>
+    <div
+      className="select-box"
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') handleClick();
+      }}
+      role="button"
+      tabIndex={0}>
       <div className="container">
         <div className="selectedValue">
-          <TextElement type='option span'>{selectedItem != "" ? selectedItem : placeholder}</TextElement>
+          <TextElement type="option span">
+            {selectedItem !== '' ? selectedItem : placeholder}
+          </TextElement>
         </div>
-        <div className="gylph">
-          {showOptions ? "▲" : "▼"}
-        </div>
+        <div className="gylph">{showOptions ? '▲' : '▼'}</div>
       </div>
-      <div className={"options_wrapper " + (showOptions ? "active" : "")}>
-        {showOptions &&
-          <div className="options">
-            {renderOptions()}
-
-          </div>
-        }
+      <div className={`options_wrapper ${showOptions ? 'active' : ''}`}>
+        {showOptions && <div className="options">{renderOptions()}</div>}
       </div>
     </div>
-  )
+  );
 }
+
+export default SelectBox;

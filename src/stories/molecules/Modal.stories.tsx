@@ -1,6 +1,6 @@
 // src/components/molecules/modal/Modal.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import { Modal } from '../../components/molecules/modal/modal';
+import Modal from '../../components/molecules/modal/modal';
 
 const meta: Meta<typeof Modal> = {
   title: 'Molecules/Modal',

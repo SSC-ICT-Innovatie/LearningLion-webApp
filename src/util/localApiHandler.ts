@@ -1,20 +1,20 @@
-import { fetchedDocument } from "./documentFactory";
+/* eslint-disable class-methods-use-this */
+import { fetchedDocument } from './documentFactory.ts';
 
 interface LLMFiles {
   uuid: string;
   question_number: string;
 }
 
-export class LocalApiHandler {
-  static apiUrl = "";
-  static apiToken = "";
+export default class LocalApiHandler {
+  static apiUrl = '';
 
-  constructor() {
+  static apiToken = '';
 
-  }
   setApiUrl(url: string) {
     LocalApiHandler.apiUrl = url;
   }
+
   setApiToken(token: string) {
     LocalApiHandler.apiToken = token;
   }
@@ -22,66 +22,58 @@ export class LocalApiHandler {
   // Query Documents
   async queryDocuments(query: string) {
     const body = {
-      query: query,
+      query,
     };
     const response = await fetch(`${LocalApiHandler.apiUrl}/query`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${LocalApiHandler.apiToken}`,
       },
       body: JSON.stringify(body),
     });
     const data = await response.json();
-    console.log(`Queried documents:`, data);
     return data;
   }
 
   // Inference LLM
   async infereLLM(query: string, documents: fetchedDocument[]) {
-    console.log(`Infering LLM for query: ${query}`);
-    console.log(`url: ${LocalApiHandler.apiUrl}`);
     const llmFiles: LLMFiles[] = [];
     documents.forEach((doc) => {
       llmFiles.push({
         uuid: doc.uuid,
-        question_number: doc.question_number,
+        question_number: doc.questionNumber,
       });
     });
     const body = {
       prompt: query,
       files: documents,
     };
-    try{
-    const response = await fetch(`${LocalApiHandler.apiUrl}/llm`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${LocalApiHandler.apiToken}`,
-      },
-      body: JSON.stringify(body),
-    }
-  );
+    try {
+      const response = await fetch(`${LocalApiHandler.apiUrl}/llm`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${LocalApiHandler.apiToken}`,
+        },
+        body: JSON.stringify(body),
+      });
 
-    const data = await response.json();
-    console.log(`Inferred LLM:`, data);
-    return data;
-  }
-  catch (error) {
-    console.log(error)
-    return false
-  }
+      const data = await response.json();
+      return data;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
+      return false;
+    }
   }
 
   // General Pipeline
-  async generalPipeline(
-    query: string,
-  ) {
+  async generalPipeline(query: string) {
     const data = { query };
     const response = await fetch(`${LocalApiHandler.apiUrl}/pipeline`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${LocalApiHandler.apiToken}`,
       },
       body: JSON.stringify(data),

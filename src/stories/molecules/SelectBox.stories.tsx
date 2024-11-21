@@ -1,6 +1,6 @@
 // src/components/molecules/selectbox/SelectBox.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import { SelectBox } from '../../components/molecules/selectbox/selectbox';
+import SelectBox from '../../components/molecules/selectbox/selectbox';
 
 const meta: Meta<typeof SelectBox> = {
   title: 'Molecules/SelectBox',

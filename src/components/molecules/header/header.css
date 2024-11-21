@@ -1,11 +1,11 @@
-.header{
+.header {
   display: flex;
   align-items: center;
   width: 100%;
   justify-content: center;
   align-items: center;
 }
-.info{
+.info {
   align-self: flex-start;
   justify-content: flex-end;
 }

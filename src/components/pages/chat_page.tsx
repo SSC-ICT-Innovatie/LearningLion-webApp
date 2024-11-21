@@ -1,53 +1,88 @@
-import { useEffect, useRef } from 'react'
-import { QuestionBar } from "../atoms/question-bar/question-bar";
-import { TextElement } from "../atoms/TextElement/TextElement";
-import { ChatMessage } from "../molecules/chatmessage/chatmessage";
-import { chatMessage } from "../../App";
-import { Button } from '../atoms/button/Button';
+import { useEffect, useRef } from 'react';
+import QuestionBar from '../atoms/question-bar/question-bar.tsx';
+import TextElement from '../atoms/TextElement/TextElement.tsx';
+import ChatMessage from '../molecules/chatmessage/chatmessage.tsx';
+import { chatMessage } from '../../App.tsx';
+import { Button } from '../atoms/button/Button.tsx';
 
 interface chatPageProps {
-  messages: chatMessage[]
-  newMessage: (message: string) => void
-  disabled?: boolean
-  emptyChat: () => void
-  errorOccured?: boolean
-  retryFailure: () => void
+  messages: chatMessage[];
+  newMessage: (message: string) => void;
+  disabled: boolean;
+  emptyChat: () => void;
+  errorOccured: boolean;
+  retryFailure: () => void;
 }
 
-export const ChatPage = ({messages, newMessage,disabled,emptyChat, errorOccured, retryFailure}:chatPageProps) => {
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+function ChatPage({
+  messages,
+  newMessage,
+  disabled = false,
+  emptyChat,
+  errorOccured = false,
+  retryFailure,
+}: chatPageProps) {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }
-  ,[messages
-  ]);
-  
+  }, [messages]);
+
   return (
-    <div className="wrapper">
-      <p onClick={emptyChat}>Verwijder chat</p>
-    <div style={{display: 'flex', flexDirection:"column", height:"65vh", overflow:'scroll', padding: "5px 0", margin:"10px 0"}}>
-      {
-        messages.map((message, index) => {
-          return <ChatMessage key={index} fromUser={message.fromUser} message={message.message} username={message.username} sources={message.sources}/>
-        })
-      }
-    <div ref={messagesEndRef}></div>
+    <div
+      className="wrapper"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 'auto',
+        width: '100%',
+      }}>
+      <Button onClick={emptyChat}>
+        <p>Verwijder chat</p>
+      </Button>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '65vh',
+          overflow: 'scroll',
+          padding: '5px 0',
+          margin: '10px 0',
+          width: '100%',
+        }}>
+        {messages.map((message, _index) => (
+          <ChatMessage
+            key={message.id}
+            fromUser={message.fromUser}
+            message={message.message}
+            username={message.username}
+            sources={message.sources}
+          />
+        ))}
+        <div ref={messagesEndRef} />
+      </div>
+      {disabled && (
+        <TextElement type="small bold left">Learning Lion is aan het typen...</TextElement>
+      )}
+      {errorOccured && (
+        <div>
+          <TextElement type="small bold left">Excuus er is een fout opgetreden</TextElement>
+          <Button onClick={retryFailure}>Probeer het opnieuw</Button>
+        </div>
+      )}
+      <QuestionBar
+        disabled={disabled}
+        onSubmit={(values: string) => {
+          newMessage(values);
+        }}
+      />
 
-    </div>
-    {disabled && <TextElement type='small bold left'>Learning Lion is aan het typen...</TextElement>}
-    {errorOccured && <div>
-      <TextElement type='small bold left'>Excuus er is een fout opgetreden</TextElement>
-      <Button onClick={retryFailure} >Probeer het opnieuw</Button>
-    </div>}
-    <QuestionBar disabled={disabled} onSubmit={(values) => {
-      newMessage(values)
-    }}/>
-
-    <TextElement type='regular bold center'>Learning Lion kan fouten maken</TextElement>
-
+      <TextElement type="regular bold center">Learning Lion kan fouten maken</TextElement>
     </div>
   );
 }
+
+export default ChatPage;
