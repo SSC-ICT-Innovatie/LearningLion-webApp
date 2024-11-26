@@ -32,9 +32,6 @@ function PdfViewer({ url, onLoaded }: PdfViewerProps) {
       })
       .then((blob) => {
         setPdfData(blob); // Set blob data for the Document component
-      })
-      .catch((error) => {
-        console.error("Error fetching PDF:", error);
       });
   }, [url]);
 
