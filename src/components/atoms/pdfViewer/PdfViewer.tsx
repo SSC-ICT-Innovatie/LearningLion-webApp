@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
@@ -14,6 +14,29 @@ interface PdfViewerProps {
 function PdfViewer({ url, onLoaded }: PdfViewerProps) {
   const [numPages, setNumPages] = useState<number>(0);
   const [scale] = useState(1);
+  const [pdfData, setPdfData] = useState<Blob | null>(null);
+
+
+  useEffect(() => {
+    // Fetch the PDF with custom headers
+    fetch(url, {
+      headers: {
+        "ngrok-skip-browser-warning": "Any value",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch PDF");
+        }
+        return response.blob(); // Convert to blob
+      })
+      .then((blob) => {
+        setPdfData(blob); // Set blob data for the Document component
+      })
+      .catch((error) => {
+        console.error("Error fetching PDF:", error);
+      });
+  }, [url]);
 
   const onDocumentLoadSuccess = ({ numPages: loadedNumPages }: { numPages: number }) => {
     if (onLoaded) {
@@ -42,7 +65,7 @@ function PdfViewer({ url, onLoaded }: PdfViewerProps) {
     <div style={{ flex: 1 }}>
       <Document
         className="custom-pdf-document"
-        file={url}
+        file={pdfData}
         onLoadSuccess={onDocumentLoadSuccess}
         error={renderErrorpdf}
         loading={renderLoadingpdf}
