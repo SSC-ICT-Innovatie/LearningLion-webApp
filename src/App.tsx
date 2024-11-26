@@ -26,12 +26,21 @@ function App() {
   const APIhandler = useRef(new LocalApiHandler());
   const [errorOccured, setErrorOccured] = useState(false);
   const [DocumentsChecked, setDocumentsChecked] = useState<fetchedDocument[]>([]);
-
   const [documentsToCheck, setDocumentsToCheck] = useState<fetchedDocument[]>([]);
+
+  const [allSpecialties, setAllSpecialties] = useState([])
+
   useEffect(() => {
     APIhandler.current.setApiUrl(apiUrl);
     APIhandler.current.setApiToken(apiToken);
+    APIhandler.current.getSpecialties().then((response) => {
+      setAllSpecialties(response);
+    });
   }, [apiUrl, apiToken]);
+
+  useEffect(() => {
+    APIhandler.current.setSpecialty(specialty);
+  }, [specialty]);
 
   const emptyChat = () => {
     setMessages([]);
@@ -106,13 +115,14 @@ function App() {
       />
       {!initalized && (
         <HomePage
-          onSubmit={(values: { specialty: SetStateAction<string>; question: string }) => {
-            setspecialty(values.specialty);
+          onSubmit={(values: { question: string }) => {
             setInitalized(true);
             handleMessage(values.question);
           }}
           setApiToken={(token: SetStateAction<string>) => setapiToken(token)}
           setApiUrl={(url: SetStateAction<string>) => setApiUrl(url)}
+          setSpecialtyCallback={(selectedSpecialty: SetStateAction<string>) => setspecialty(selectedSpecialty)}
+          specialties={allSpecialties}
         />
       )}
       {documentsToCheck.length > 0 && initalized && !APIcall && (

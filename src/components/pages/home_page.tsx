@@ -5,16 +5,20 @@ import SelectBox from '../molecules/selectbox/selectbox.tsx';
 import Modal from '../molecules/modal/modal.tsx';
 
 interface HomePageProps {
-  onSubmit: (_values: { specialty: string; question: string }) => void;
+  onSubmit: (_values: {question: string }) => void;
   setApiToken: (_token: string) => void;
   setApiUrl: (_url: string) => void;
+  specialties: string[];
+  setSpecialtyCallback(selectedSpecialty: SetStateAction<string>): void;
 }
 
-function HomePage({ onSubmit, setApiToken, setApiUrl }: HomePageProps) {
-  const [specialty, setSpecialty] = useState('None');
+function HomePage({ onSubmit, setApiToken, setApiUrl,specialties,setSpecialtyCallback }: HomePageProps) {
   const [showModal, setshowModal] = useState(true);
   const [token, setToken] = useState('');
   const [url, setUrl] = useState('');
+
+
+  
   return (
     <div>
       {showModal && (
@@ -42,9 +46,9 @@ function HomePage({ onSubmit, setApiToken, setApiUrl }: HomePageProps) {
         <div className="specialty">
           <TextElement type="regular">Specialiteit</TextElement>
           <SelectBox
-            options={['Kamervragen']}
+            options={specialties}
             placeholder="Geen selectie"
-            onSubmit={(val: SetStateAction<string>) => setSpecialty(val)}
+            onSubmit={(val: SetStateAction<string>) => setSpecialtyCallback(val)}
           />
         </div>
 
@@ -53,7 +57,6 @@ function HomePage({ onSubmit, setApiToken, setApiUrl }: HomePageProps) {
           <QuestionBar
             onSubmit={(values: string) => {
               onSubmit({
-                specialty,
                 question: values,
               });
             }}

@@ -11,6 +11,8 @@ export default class LocalApiHandler {
 
   static apiToken = '';
 
+  static specialty = 'None';
+
   setApiUrl(url: string) {
     LocalApiHandler.apiUrl = url;
   }
@@ -19,16 +21,23 @@ export default class LocalApiHandler {
     LocalApiHandler.apiToken = token;
   }
 
+  setSpecialty(specialty: string) {
+    LocalApiHandler.specialty = specialty
+  }
+
   // Query Documents
   async queryDocuments(query: string) {
     const body = {
       query,
+      "specialty":LocalApiHandler.specialty,
     };
     const response = await fetch(`${LocalApiHandler.apiUrl}/query`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${LocalApiHandler.apiToken}`,
+        'ngrok-skip-browser-warning': 'Any value',
+
       },
       body: JSON.stringify(body),
     });
@@ -48,6 +57,7 @@ export default class LocalApiHandler {
     const body = {
       prompt: query,
       files: documents,
+      "specialty":LocalApiHandler.specialty,
     };
     try {
       const response = await fetch(`${LocalApiHandler.apiUrl}/llm`, {
@@ -55,6 +65,8 @@ export default class LocalApiHandler {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${LocalApiHandler.apiToken}`,
+          'ngrok-skip-browser-warning': 'Any value',
+
         },
         body: JSON.stringify(body),
       });
@@ -69,16 +81,35 @@ export default class LocalApiHandler {
 
   // General Pipeline
   async generalPipeline(query: string) {
-    const data = { query };
+    const data = { 
+      query,
+      "specialty":LocalApiHandler.specialty,
+
+     };
     const response = await fetch(`${LocalApiHandler.apiUrl}/pipeline`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${LocalApiHandler.apiToken}`,
+        'ngrok-skip-browser-warning': 'Any value',
+
       },
       body: JSON.stringify(data),
     });
     const result = await response.json();
     return result.result;
+  }
+
+  async getSpecialties() {
+    const response = await fetch(`${LocalApiHandler.apiUrl}/specialties`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${LocalApiHandler.apiToken}`,
+        'ngrok-skip-browser-warning': 'Any value',
+      },
+    });
+    const data = await response.json();
+    return data;
   }
 }
