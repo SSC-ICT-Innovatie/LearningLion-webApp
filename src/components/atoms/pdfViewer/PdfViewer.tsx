@@ -16,17 +16,16 @@ function PdfViewer({ url, onLoaded }: PdfViewerProps) {
   const [scale] = useState(1);
   const [pdfData, setPdfData] = useState<Blob | null>(null);
 
-
   useEffect(() => {
     // Fetch the PDF with custom headers
     fetch(url, {
       headers: {
-        "ngrok-skip-browser-warning": "Any value",
+        'ngrok-skip-browser-warning': 'Any value',
       },
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Failed to fetch PDF");
+          throw new Error('Failed to fetch PDF');
         }
         return response.blob(); // Convert to blob
       })
