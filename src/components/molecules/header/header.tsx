@@ -1,12 +1,15 @@
 import TextElement from '../../atoms/TextElement/TextElement.tsx';
+import SelectBox from '../selectbox/selectbox.tsx';
 import './header.css';
 
 interface HeaderProps {
   chatPage: boolean;
   specialty?: string;
+  setLLMModel: (_model: string) => void;
+  models: string[];
 }
 
-function Header({ chatPage, specialty }: HeaderProps) {
+function Header({ chatPage, specialty, setLLMModel, models }: HeaderProps) {
   return (
     <div className="header">
       {chatPage && (
@@ -22,6 +25,11 @@ function Header({ chatPage, specialty }: HeaderProps) {
           </TextElement>
         </>
       )}
+      <SelectBox
+        options={models}
+        placeholder="Geen selectie"
+        onSubmit={(val: string) => setLLMModel(val)}
+      />
     </div>
   );
 }

@@ -7,6 +7,8 @@ import createChatMessage from './util/chatMessageFactory.ts';
 import LocalApiHandler from './util/localApiHandler.ts';
 import DocumentCheckPage from './components/pages/document_check_page/document_check_page.tsx';
 import { createFetchDocument, fetchedDocument } from './util/documentFactory.ts';
+import DefaultTemplate from './components/template/default-Template.tsx';
+import KamervragenTemplate from './components/template/kamervragen-Template.tsx';
 
 export interface chatMessage {
   id: Key;
@@ -27,14 +29,23 @@ function App() {
   const [errorOccured, setErrorOccured] = useState(false);
   const [DocumentsChecked, setDocumentsChecked] = useState<fetchedDocument[]>([]);
   const [documentsToCheck, setDocumentsToCheck] = useState<fetchedDocument[]>([]);
+  const [allSpecialties, setAllSpecialties] = useState([]);
+  const [LLMModel, setLLMModel] = useState('BramVanRoy/fietje-2-chat');
+  const [availableModels, setAvailableModels] = useState([]);
+  const [jsonBodyPrompt, setJsonBodyPrompt] = useState({});
 
-  const [allSpecialties, setAllSpecialties] = useState([])
+  useEffect(() => {
+    APIhandler.current.setLLMModel(LLMModel);
+  }, [LLMModel]);
 
   useEffect(() => {
     APIhandler.current.setApiUrl(apiUrl);
     APIhandler.current.setApiToken(apiToken);
     APIhandler.current.getSpecialties().then((response) => {
       setAllSpecialties(response);
+    });
+    APIhandler.current.getAvailableModles().then((response) => {
+      setAvailableModels(response);
     });
   }, [apiUrl, apiToken]);
 
@@ -46,21 +57,46 @@ function App() {
     setMessages([]);
   };
 
-  const handleMessage = (message: string) => {
-    if (message === '') {
+  const handleMessage = (
+    message:
+      | string
+      | {
+          inleiding: string;
+          vragen: string;
+          departmentSentiment: string;
+          news: string;
+        },
+  ) => {
+    // Early returns for edge cases
+    if (!message || apiUrl === '') {
       return;
     }
-    if (apiUrl === '') {
-      return;
-    }
-    setAPIcall(true);
-    setMessages((val) => val.concat(createChatMessage(message, true)));
 
+    // Set API call status
+    setAPIcall(true);
+
+    // Combine message if it's an object, otherwise use it as-is
+    const combinedMessage =
+      typeof message === 'object'
+        ? `${message.inleiding} ${message.vragen} ${message.departmentSentiment} ${message.news}`
+        : message;
+    if (typeof message === 'object') {
+      setJsonBodyPrompt({
+        message,
+        combinedMessage,
+        prompt: `${message.inleiding} ${message.vragen}`,
+      });
+    }
+    // Update the messages state
+    setMessages((val) => val.concat(createChatMessage(combinedMessage, true)));
+
+    // Fetch documents using the combined message
     APIhandler.current
-      .queryDocuments(message)
+      .queryDocuments(combinedMessage)
       .then((response) => {
         const { documents } = response;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+        // Map fetched documents to the desired format
         const fetchedDocuments = documents.map(
           (
             document: {
@@ -86,13 +122,17 @@ function App() {
               document.metadata.question_number,
             ),
         );
+
+        // Update documents state
         setDocumentsToCheck(fetchedDocuments);
         setAPIcall(false);
       })
-      .catch((_error) => {});
+      .catch((_error) => {
+        // Handle errors if necessary
+        setAPIcall(false); // Ensure the API call flag is reset on error
+      });
   };
-
-  const callLlm = (query: string, documents: fetchedDocument[]) => {
+  const callLlm = (query: string | object, documents: fetchedDocument[]) => {
     APIhandler.current
       .infereLLM(query, documents)
       .then((response) => {
@@ -107,21 +147,50 @@ function App() {
       })
       .catch((_error: Error) => {});
   };
+
+  const renderTemplate = () => {
+    if (specialty === 'KamerVragen') {
+      return (
+        <KamervragenTemplate
+          onSubmit={(values: {
+            inleiding: string;
+            vragen: string;
+            departmentSentiment: string;
+            news: string;
+          }) => {
+            setInitalized(true);
+            handleMessage(values);
+          }}
+        />
+      );
+    }
+
+    return (
+      <DefaultTemplate
+        onSubmit={(values: { question: string }) => {
+          setInitalized(true);
+          handleMessage(values.question);
+        }}
+      />
+    );
+  };
+
   return (
     <div className="wrapper">
       <Header
         chatPage={initalized}
         specialty={specialty}
+        setLLMModel={(model: SetStateAction<string>) => setLLMModel(model)}
+        models={availableModels}
       />
       {!initalized && (
         <HomePage
-          onSubmit={(values: { question: string }) => {
-            setInitalized(true);
-            handleMessage(values.question);
-          }}
+          template={renderTemplate()}
           setApiToken={(token: SetStateAction<string>) => setapiToken(token)}
           setApiUrl={(url: SetStateAction<string>) => setApiUrl(url)}
-          setSpecialtyCallback={(selectedSpecialty: SetStateAction<string>) => setspecialty(selectedSpecialty)}
+          setSpecialtyCallback={(selectedSpecialty: SetStateAction<string>) =>
+            setspecialty(selectedSpecialty)
+          }
           specialties={allSpecialties}
         />
       )}
@@ -133,7 +202,11 @@ function App() {
             setDocumentsToCheck([]);
             setAPIcall(true);
             setDocumentsChecked(documents);
-            callLlm(messages.at(messages.length - 1)?.message ?? '', documents);
+            if (Object.keys(jsonBodyPrompt).length > 0) {
+              callLlm(jsonBodyPrompt, documents);
+            } else {
+              callLlm(messages.at(messages.length - 1)?.message ?? '', documents);
+            }
           }}
         />
       )}
@@ -147,10 +220,21 @@ function App() {
             setErrorOccured(false);
             setDocumentsChecked([]);
           }}
+          regenerateMessage={() => {
+            if (Object.keys(jsonBodyPrompt).length > 0) {
+              callLlm(jsonBodyPrompt, DocumentsChecked);
+            } else {
+              callLlm(messages.at(messages.length - 1)?.message ?? '', DocumentsChecked);
+            }
+          }}
           errorOccured={errorOccured}
           retryFailure={() => {
             setErrorOccured(false);
-            callLlm(messages.at(messages.length - 1)?.message ?? '', DocumentsChecked);
+            if (Object.keys(jsonBodyPrompt).length > 0) {
+              callLlm(jsonBodyPrompt, DocumentsChecked);
+            } else {
+              callLlm(messages.at(messages.length - 1)?.message ?? '', DocumentsChecked);
+            }
           }}
         />
       )}

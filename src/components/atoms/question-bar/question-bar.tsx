@@ -5,9 +5,10 @@ import sendIcon from '../../../assets/send-black.svg';
 interface QuestionBarProps {
   onSubmit: (values: string) => void;
   disabled?: boolean;
+  placeholder?: string;
 }
 
-function QuestionBar({ onSubmit, disabled }: QuestionBarProps) {
+function QuestionBar({ onSubmit, disabled, placeholder }: QuestionBarProps) {
   const [question, setquestion] = useState('');
 
   const handleSubmit = () => {
@@ -21,7 +22,7 @@ function QuestionBar({ onSubmit, disabled }: QuestionBarProps) {
     <div className={`question-bar ${disabled && 'disabled'}`}>
       <input
         type="text"
-        placeholder="Schrijf hier je vraag"
+        placeholder={placeholder ?? 'Schrijf hier je vraag'}
         value={question}
         onChange={(val) => setquestion(val.target.value)}
         disabled={disabled}
@@ -49,6 +50,7 @@ function QuestionBar({ onSubmit, disabled }: QuestionBarProps) {
 
 QuestionBar.defaultProps = {
   disabled: false,
+  placeholder: 'Schrijf hier je vraag',
 };
 
 export default QuestionBar;

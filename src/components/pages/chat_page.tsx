@@ -12,6 +12,7 @@ interface chatPageProps {
   emptyChat: () => void;
   errorOccured: boolean;
   retryFailure: () => void;
+  regenerateMessage: () => void;
 }
 
 function ChatPage({
@@ -21,6 +22,7 @@ function ChatPage({
   emptyChat,
   errorOccured = false,
   retryFailure,
+  regenerateMessage,
 }: chatPageProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -60,6 +62,7 @@ function ChatPage({
             message={message.message}
             username={message.username}
             sources={message.sources}
+            retryFunction={regenerateMessage}
           />
         ))}
         <div ref={messagesEndRef} />

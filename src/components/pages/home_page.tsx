@@ -1,24 +1,28 @@
 import { SetStateAction, useState } from 'react';
 import TextElement from '../atoms/TextElement/TextElement.tsx';
-import QuestionBar from '../atoms/question-bar/question-bar.tsx';
+// import QuestionBar from '../atoms/question-bar/question-bar.tsx';
 import SelectBox from '../molecules/selectbox/selectbox.tsx';
 import Modal from '../molecules/modal/modal.tsx';
 
 interface HomePageProps {
-  onSubmit: (_values: {question: string }) => void;
   setApiToken: (_token: string) => void;
   setApiUrl: (_url: string) => void;
   specialties: string[];
   setSpecialtyCallback(selectedSpecialty: SetStateAction<string>): void;
+  template: JSX.Element;
 }
 
-function HomePage({ onSubmit, setApiToken, setApiUrl,specialties,setSpecialtyCallback }: HomePageProps) {
+function HomePage({
+  setApiToken,
+  setApiUrl,
+  specialties,
+  setSpecialtyCallback,
+  template,
+}: HomePageProps) {
   const [showModal, setshowModal] = useState(true);
   const [token, setToken] = useState('');
   const [url, setUrl] = useState('');
 
-
-  
   return (
     <div>
       {showModal && (
@@ -51,17 +55,7 @@ function HomePage({ onSubmit, setApiToken, setApiUrl,specialties,setSpecialtyCal
             onSubmit={(val: SetStateAction<string>) => setSpecialtyCallback(val)}
           />
         </div>
-
-        <div className="question-section">
-          <TextElement type="mid-heading bold">Stel je eerste vraag aan Learning Lion</TextElement>
-          <QuestionBar
-            onSubmit={(values: string) => {
-              onSubmit({
-                question: values,
-              });
-            }}
-          />
-        </div>
+        {template}
       </div>
     </div>
   );
