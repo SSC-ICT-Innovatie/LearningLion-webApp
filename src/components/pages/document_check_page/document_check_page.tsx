@@ -5,6 +5,8 @@ import DocumentItem from '../../molecules/documentItem/documentItem.tsx';
 import './document_check_page.css';
 import { Button } from '../../atoms/button/Button.tsx';
 import InputTextField from '../../atoms/inputTextField/inputTextField.tsx';
+import TextElement from '../../atoms/TextElement/TextElement.tsx';
+import Checkbox from '../../atoms/Checkbox/Checkbox.tsx';
 
 interface DocumentCheckPageProps {
   documents: fetchedDocument[];
@@ -12,17 +14,23 @@ interface DocumentCheckPageProps {
   question: string;
   onSubmit: (documents: fetchedDocument[]) => void;
   getNewDocs: (query: string) => void;
-  onRemove: (uuid: string) => void;
 }
-function DocumentCheckPage({ documents, apiUrl,question, onSubmit, getNewDocs, onRemove }: DocumentCheckPageProps) {
+function DocumentCheckPage({
+  documents,
+  apiUrl,
+  question,
+  onSubmit,
+  getNewDocs,
+}: DocumentCheckPageProps) {
   const [pdfUrl, setPdfUrl] = useState('');
-  const [docs, setDocs] = useState(documents ?? []);
+  const [docs, _setDocs] = useState(documents ?? []);
   const [files, setFiles] = useState<{
     [key: string]: { subject: string; docs: fetchedDocument[] };
   }>({});
+  const [ApprovedFiles, setApprovedFiles] = useState<fetchedDocument[]>([]);
   const [pdfShown, setPdfShown] = useState(false);
   const [fileSelected, setfileSelected] = useState('');
-  const [newQuery, setnewQuery] = useState('')
+  const [newQuery, setnewQuery] = useState('');
 
   const closePdfViewer = () => {
     setPdfShown(false);
@@ -64,15 +72,15 @@ function DocumentCheckPage({ documents, apiUrl,question, onSubmit, getNewDocs, o
                   }}>
                   <span>{files[uuid]?.subject || uuid}</span>
                 </Button>
-                {/* delete button */}
-                <Button
+                <Checkbox
                   onClick={() => {
-                    onRemove(uuid);
-                    setDocs(docs.filter((doc) => doc.uuid !== uuid));
+                    const approvedDocs = docs.filter((doc) => doc.uuid === uuid);
+                    if (approvedDocs) {
+                      setApprovedFiles([...ApprovedFiles, ...approvedDocs]);
+                    }
                   }}
-                  purpose="delete">
-                  <span>X</span>
-                </Button>
+                  value={ApprovedFiles.some((doc) => doc.uuid === uuid)}
+                />
               </div>
             ))}
           </div>
@@ -89,18 +97,20 @@ function DocumentCheckPage({ documents, apiUrl,question, onSubmit, getNewDocs, o
           <span>Ga terug</span>
         </Button>
         <div className="selector__body">
+          <TextElement type="mid-heading bold">{files[fileSelected].subject}</TextElement>
           {files[fileSelected].docs.map((document) => (
             <DocumentItem
               key={document.id}
               document={document}
               onClick={() => {}}
-              onDelete={(id: number) => {
-                setDocs(docs.filter((doc) => doc.id !== id));
-                if (files[fileSelected].docs.length === 1) {
-                  setfileSelected('');
-                  setPdfUrl('');
+              onCheck={() => {
+                if (ApprovedFiles.some((doc) => doc.id === document.id)) {
+                  setApprovedFiles(ApprovedFiles.filter((doc) => doc.id !== document.id));
+                } else {
+                  setApprovedFiles([...ApprovedFiles, document]);
                 }
               }}
+              checked={ApprovedFiles.some((doc) => doc.id === document.id)}
             />
           ))}
         </div>
@@ -119,17 +129,24 @@ function DocumentCheckPage({ documents, apiUrl,question, onSubmit, getNewDocs, o
         }}>
         <span>Versturen</span>
       </Button>
-      <InputTextField label="Vraag meer document op" id="document" onChange={(val) => {
-        setnewQuery(val);
-      }} />
+      <InputTextField
+        label="Vraag meer document op"
+        id="document"
+        onChange={(val) => {
+          setnewQuery(val);
+        }}
+        value={newQuery}
+      />
       <Button
         purpose="sucess"
         onClick={() => {
           getNewDocs(newQuery);
+          setnewQuery('');
         }}>
         <span>zoek</span>
-        </Button>
+      </Button>
       <div className="documentsCheckPage__body">
+        <TextElement type="small gray subtitle">{docs.length.toString()} documenten</TextElement>
         <div className="documentsWrapper">{renderSelector()}</div>
         <div className="documentViewerWrapper">
           <div className={`documentViewer ${pdfShown ? 'show' : ''}`}>

@@ -1,15 +1,16 @@
-import Button from '../../atoms/button/Button.tsx';
 import { fetchedDocument } from '../../../util/documentFactory.ts';
 import TextElement from '../../atoms/TextElement/TextElement.tsx';
 import './documentitem.css';
+import Checkbox from '../../atoms/Checkbox/Checkbox.tsx';
 
 interface DocumentItemProps {
   document: fetchedDocument;
-  onDelete: (uuid: number) => void;
+  onCheck: (id: string) => void;
   onClick: (UUID: string) => void;
+  checked: boolean;
 }
 
-function DocumentItem({ document, onDelete, onClick }: DocumentItemProps) {
+function DocumentItem({ document, onCheck, onClick, checked }: DocumentItemProps) {
   return (
     <div className="documentItem">
       <div
@@ -25,11 +26,10 @@ function DocumentItem({ document, onDelete, onClick }: DocumentItemProps) {
         <TextElement type="small gray subtitle">{document.text}</TextElement>
         <TextElement type="medium black content">{document.answer}</TextElement>
       </div>
-      <Button
-        purpose="delete"
-        onClick={() => onDelete(document.id)}>
-        <span>X</span>
-      </Button>
+      <Checkbox
+        value={checked}
+        onClick={() => onCheck(document.id.toString())}
+      />
     </div>
   );
 }

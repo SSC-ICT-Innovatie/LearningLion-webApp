@@ -13,6 +13,7 @@ const mockDocuments: fetchedDocument[] = [
     id: 1,
     text: 'Sample text 1',
     questionNumber: '1',
+    answer: ''
   },
   {
     uuid: '2',
@@ -23,6 +24,7 @@ const mockDocuments: fetchedDocument[] = [
     id: 2,
     text: 'Sample text 2',
     questionNumber: '2',
+    answer: 'sample answer 2'
   },
   {
     uuid: '3',
@@ -33,6 +35,7 @@ const mockDocuments: fetchedDocument[] = [
     id: 3,
     text: 'Sample text 3',
     questionNumber: '3',
+    answer: 'sample answer 3'
   },
 ];
 const meta: Meta<typeof DocumentCheckPage> = {
@@ -68,6 +71,7 @@ export const WithOneDocument: Story = {
         id: 1,
         text: 'Sample text',
         questionNumber: '1',
+        answer: 'Sample answer',
       },
     ],
   },

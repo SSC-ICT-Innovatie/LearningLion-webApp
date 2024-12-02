@@ -2,7 +2,7 @@ import './TextElement.css';
 
 interface TextProps {
   type: string;
-  children: string;
+  children: string[] | string;
   onClick?: () => void;
   link?: string;
 }
