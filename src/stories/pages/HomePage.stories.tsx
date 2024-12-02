@@ -10,7 +10,6 @@ const meta: Meta<typeof HomePage> = {
     layout: 'fullscreen',
   },
   args: {
-    onSubmit: (values: {specialty: string; question: string}) => alert(`Specialty: ${values.specialty}, Question: ${values.question}`),
     setApiToken: (token: string) => alert(`API Token: ${token}`),
     setApiUrl: (url: string) => alert(`API URL: ${url}`),
   },
@@ -26,12 +25,19 @@ export const Default: Story = {
 export const WithoutModal: Story = {
   args: {},
   decorators: [
-    () => <HomePage onSubmit={alert} setApiToken={alert} setApiUrl={alert} />,
+    () => (
+      <HomePage
+        setApiToken={alert}
+        setApiUrl={alert}
+        specialties={[]}
+        setSpecialtyCallback={() => { } } 
+        template={<div />}      />
+    ),
   ],
 };
 
 export const WithSpecialtySelected: Story = {
   args: {
-    onSubmit: ({ specialty, question }: { specialty: string; question: string }) => alert(`Selected Specialty: ${specialty}\nQuestion: ${question}`),
+    setSpecialtyCallback: (selectedSpecialty: string) => alert(`Selected Specialty: ${selectedSpecialty}`),
   },
 };
