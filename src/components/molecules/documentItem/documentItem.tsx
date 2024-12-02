@@ -22,8 +22,8 @@ function DocumentItem({ document, onDelete, onClick }: DocumentItemProps) {
             onClick(document.uuid);
           }
         }}>
-        <TextElement type="small gray subtitle">{document.subject}</TextElement>
-        <TextElement type="medium black content">{document.text}</TextElement>
+        <TextElement type="small gray subtitle">{document.text}</TextElement>
+        <TextElement type="medium black content">{document.answer}</TextElement>
       </div>
       <Button
         purpose="delete"

@@ -7,6 +7,7 @@ export interface fetchedDocument {
   page: number;
   text: string;
   questionNumber: string;
+  answer: string;
 }
 
 export const createFetchDocument = (
@@ -18,6 +19,7 @@ export const createFetchDocument = (
   text: string,
   id: number,
   questionNumber: string,
+  answer: string,
 ): fetchedDocument => ({
   id,
   subject,
@@ -27,4 +29,5 @@ export const createFetchDocument = (
   page,
   text,
   questionNumber,
+  answer,
 });

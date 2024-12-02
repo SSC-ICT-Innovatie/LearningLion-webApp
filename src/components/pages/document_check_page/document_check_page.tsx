@@ -4,13 +4,17 @@ import PdfViewer from '../../atoms/pdfViewer/PdfViewer.tsx';
 import DocumentItem from '../../molecules/documentItem/documentItem.tsx';
 import './document_check_page.css';
 import { Button } from '../../atoms/button/Button.tsx';
+import InputTextField from '../../atoms/inputTextField/inputTextField.tsx';
 
 interface DocumentCheckPageProps {
   documents: fetchedDocument[];
   apiUrl: string;
+  question: string;
   onSubmit: (documents: fetchedDocument[]) => void;
+  getNewDocs: (query: string) => void;
+  onRemove: (uuid: string) => void;
 }
-function DocumentCheckPage({ documents, apiUrl, onSubmit }: DocumentCheckPageProps) {
+function DocumentCheckPage({ documents, apiUrl,question, onSubmit, getNewDocs, onRemove }: DocumentCheckPageProps) {
   const [pdfUrl, setPdfUrl] = useState('');
   const [docs, setDocs] = useState(documents ?? []);
   const [files, setFiles] = useState<{
@@ -18,6 +22,7 @@ function DocumentCheckPage({ documents, apiUrl, onSubmit }: DocumentCheckPagePro
   }>({});
   const [pdfShown, setPdfShown] = useState(false);
   const [fileSelected, setfileSelected] = useState('');
+  const [newQuery, setnewQuery] = useState('')
 
   const closePdfViewer = () => {
     setPdfShown(false);
@@ -62,6 +67,7 @@ function DocumentCheckPage({ documents, apiUrl, onSubmit }: DocumentCheckPagePro
                 {/* delete button */}
                 <Button
                   onClick={() => {
+                    onRemove(uuid);
                     setDocs(docs.filter((doc) => doc.uuid !== uuid));
                   }}
                   purpose="delete">
@@ -105,6 +111,7 @@ function DocumentCheckPage({ documents, apiUrl, onSubmit }: DocumentCheckPagePro
   return (
     <div className="documentsCheckPage">
       <h1>DocumentCheckPage</h1>
+      <p>Je vraag: {question}</p>
       <Button
         purpose="sucess"
         onClick={() => {
@@ -112,6 +119,16 @@ function DocumentCheckPage({ documents, apiUrl, onSubmit }: DocumentCheckPagePro
         }}>
         <span>Versturen</span>
       </Button>
+      <InputTextField label="Vraag meer document op" id="document" onChange={(val) => {
+        setnewQuery(val);
+      }} />
+      <Button
+        purpose="sucess"
+        onClick={() => {
+          getNewDocs(newQuery);
+        }}>
+        <span>zoek</span>
+        </Button>
       <div className="documentsCheckPage__body">
         <div className="documentsWrapper">{renderSelector()}</div>
         <div className="documentViewerWrapper">

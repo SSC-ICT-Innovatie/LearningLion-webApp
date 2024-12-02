@@ -97,6 +97,7 @@ function App() {
         const { documents } = response;
 
         // Map fetched documents to the desired format
+        console.log(documents);
         const fetchedDocuments = documents.map(
           (
             document: {
@@ -108,6 +109,7 @@ function App() {
                 question_number: string;
               };
               text: string;
+              answer: string;
             },
             index: number,
           ) =>
@@ -120,6 +122,7 @@ function App() {
               document.text,
               index,
               document.metadata.question_number,
+              document.answer
             ),
         );
 
@@ -178,65 +181,120 @@ function App() {
   return (
     <div className="wrapper">
       <Header
-        chatPage={initalized}
-        specialty={specialty}
-        setLLMModel={(model: SetStateAction<string>) => setLLMModel(model)}
-        models={availableModels}
+      chatPage={initalized}
+      specialty={specialty}
+      setLLMModel={(model: SetStateAction<string>) => setLLMModel(model)}
+      models={availableModels}
       />
       {!initalized && (
-        <HomePage
-          template={renderTemplate()}
-          setApiToken={(token: SetStateAction<string>) => setapiToken(token)}
-          setApiUrl={(url: SetStateAction<string>) => setApiUrl(url)}
-          setSpecialtyCallback={(selectedSpecialty: SetStateAction<string>) =>
-            setspecialty(selectedSpecialty)
-          }
-          specialties={allSpecialties}
-        />
+      <HomePage
+        template={renderTemplate()}
+        setApiToken={(token: SetStateAction<string>) => setapiToken(token)}
+        setApiUrl={(url: SetStateAction<string>) => setApiUrl(url)}
+        setSpecialtyCallback={(selectedSpecialty: SetStateAction<string>) =>
+        setspecialty(selectedSpecialty)
+        }
+        specialties={allSpecialties}
+      />
       )}
       {documentsToCheck.length > 0 && initalized && !APIcall && (
-        <DocumentCheckPage
-          documents={documentsToCheck}
-          apiUrl={apiUrl}
-          onSubmit={(documents: fetchedDocument[]) => {
-            setDocumentsToCheck([]);
-            setAPIcall(true);
-            setDocumentsChecked(documents);
-            if (Object.keys(jsonBodyPrompt).length > 0) {
-              callLlm(jsonBodyPrompt, documents);
-            } else {
-              callLlm(messages.at(messages.length - 1)?.message ?? '', documents);
-            }
-          }}
-        />
+      <DocumentCheckPage
+        key={documentsToCheck.map((doc) => doc.uuid).join('-')}
+        documents={documentsToCheck}
+        apiUrl={apiUrl}
+        question={messages.at(messages.length - 1)?.message ?? ''}
+        onRemove={(uuid: string) => {
+        setDocumentsToCheck((prev) =>
+          prev.filter((document) => document.uuid !== uuid)
+        );
+        }
+        }
+        onSubmit={(documents: fetchedDocument[]) => {
+        setDocumentsToCheck([]);
+        setAPIcall(true);
+        setDocumentsChecked(documents);
+        if (Object.keys(jsonBodyPrompt).length > 0) {
+          callLlm(jsonBodyPrompt, documents);
+        } else {
+          callLlm(messages.at(messages.length - 1)?.message ?? '', documents);
+        }
+        }}
+        getNewDocs={(query: string) => {
+        APIhandler.current
+          .queryDocuments(query)
+          .then((response) => {
+          const { documents } = response;
+          const fetchedDocuments = documents.map(
+            (
+            document: {
+              metadata: {
+              subject: string;
+              UUID: string;
+              source: string;
+              page_number: number;
+              question_number: string;
+              };
+              text: string;
+              answer: string;
+            },
+            index: number,
+            ) =>
+            createFetchDocument(
+              document.metadata.subject,
+              '',
+              document.metadata.UUID,
+              document.metadata.source,
+              document.metadata.page_number,
+              document.text,
+              index,
+              document.metadata.question_number,
+              document.answer
+            ),
+          );
+          // filter already existing documents
+          const filteredDocuments = fetchedDocuments.filter(
+            (doc: { uuid: string; }) =>
+            !documentsToCheck.some(
+              (documentToCheck) => documentToCheck.uuid === doc.uuid
+            )
+          );
+          console.log(filteredDocuments);
+          console.log(documentsToCheck.length);
+          setDocumentsToCheck((prev) => [...prev, ...filteredDocuments]);
+          })
+          .catch((_error) => {
+          setAPIcall(false);
+          });
+        }}
+      />
       )}
       {initalized && documentsToCheck.length === 0 && (
-        <ChatPage
-          messages={messages}
-          disabled={APIcall}
-          emptyChat={emptyChat}
-          newMessage={(message: string) => {
-            handleMessage(message);
-            setErrorOccured(false);
-            setDocumentsChecked([]);
-          }}
-          regenerateMessage={() => {
-            if (Object.keys(jsonBodyPrompt).length > 0) {
-              callLlm(jsonBodyPrompt, DocumentsChecked);
-            } else {
-              callLlm(messages.at(messages.length - 1)?.message ?? '', DocumentsChecked);
-            }
-          }}
-          errorOccured={errorOccured}
-          retryFailure={() => {
-            setErrorOccured(false);
-            if (Object.keys(jsonBodyPrompt).length > 0) {
-              callLlm(jsonBodyPrompt, DocumentsChecked);
-            } else {
-              callLlm(messages.at(messages.length - 1)?.message ?? '', DocumentsChecked);
-            }
-          }}
-        />
+      <ChatPage
+        messages={messages}
+        disabled={APIcall}
+        emptyChat={emptyChat}
+        newMessage={(message: string) => {
+        handleMessage(message);
+        setErrorOccured(false);
+        setDocumentsChecked([]);
+        }}
+        regenerateMessage={() => {
+        if (Object.keys(jsonBodyPrompt).length > 0) {
+          callLlm(jsonBodyPrompt, DocumentsChecked);
+        } else {
+          callLlm(messages.at(messages.length - 1)?.message ?? '', DocumentsChecked);
+        }
+        }}
+        errorOccured={errorOccured}
+        retryFailure={() => {
+        setErrorOccured(false);
+        if (Object.keys(jsonBodyPrompt).length > 0) {
+          callLlm(jsonBodyPrompt, DocumentsChecked);
+        } else {
+          callLlm(messages.at(messages.length - 1)?.message ?? '', DocumentsChecked);
+        }
+        }}
+      />
       )}
     </div>
   );
