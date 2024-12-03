@@ -26,6 +26,7 @@ function KamervragenTemplate({ onSubmit }: KamervragenTemplateProps) {
         onChange={(val) => {
           setInleiding(val);
         }}
+        value={inleiding}
       />
       <InputTextField
         label="vragen"
@@ -33,6 +34,7 @@ function KamervragenTemplate({ onSubmit }: KamervragenTemplateProps) {
         onChange={(val) => {
           setVragen(val);
         }}
+        value={vragen}
       />
       <InputTextField
         label="departement sentiment"
@@ -40,6 +42,7 @@ function KamervragenTemplate({ onSubmit }: KamervragenTemplateProps) {
         onChange={(val) => {
           setDepartmentSentiment(val);
         }}
+        value={departmentSentiment}
       />
       <InputTextField
         label="Relevante nieuws feiten"
@@ -47,6 +50,7 @@ function KamervragenTemplate({ onSubmit }: KamervragenTemplateProps) {
         onChange={(val) => {
           setNews(val);
         }}
+        value={news}
       />
 
       <SubmitButton
