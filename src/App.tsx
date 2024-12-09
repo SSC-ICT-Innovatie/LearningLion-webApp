@@ -92,12 +92,12 @@ function App() {
     setMessages((val) => val.concat(createChatMessage(combinedMessage, true)));
 
     // Fetch documents using the combined message
-      fetchedDocuments(combinedMessage, specialty, APIhandler)
+    fetchedDocuments(combinedMessage, specialty, APIhandler)
       .then((response: fetchedDocument[]) => {
-          console.log("fetched documents");
-          console.log(response);
-          setDocumentsToCheck(response);
-          setAPIcall(false);
+        console.log('fetched documents');
+        console.log(response);
+        setDocumentsToCheck(response);
+        setAPIcall(false);
       })
       .catch((_error) => {
         // Handle errors if necessary
@@ -173,7 +173,7 @@ function App() {
           apiUrl={apiUrl}
           question={messages.at(messages.length - 1)?.message ?? ''}
           onSubmit={(documents: fetchedDocument[]) => {
-            console.log("on submit");
+            console.log('on submit');
             setDocumentsToCheck([]);
             setAPIcall(true);
             setDocumentsChecked(documents);
@@ -184,12 +184,12 @@ function App() {
             }
           }}
           getNewDocs={(query: string) => {
-            console.log("get new docs");
+            console.log('get new docs');
             setAPIcall(true);
             fetchedDocuments(query, specialty, APIhandler)
               .then((response: fetchedDocument[]) => {
                 setAPIcall(false);
-                console.log("fetched documents");
+                console.log('fetched documents');
                 const filteredDocuments = response.filter(
                   (doc: { uuid: string }) =>
                     !documentsToCheck.some((documentToCheck) => documentToCheck.uuid === doc.uuid),

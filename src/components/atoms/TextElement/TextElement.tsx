@@ -8,14 +8,13 @@ interface TextProps {
 }
 
 function TextElement({ type, children, onClick, link }: TextProps) {
-  let presentableText = "";
-  if(children instanceof Array) {
+  let presentableText = '';
+  if (children instanceof Array) {
     presentableText = children.join(' ');
   }
-  if(typeof children === 'string') {
+  if (typeof children === 'string') {
     presentableText = children;
-  }
-  else{
+  } else {
     presentableText = `${children}`;
   }
   if (type.includes('span')) {

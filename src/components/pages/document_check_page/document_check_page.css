@@ -86,23 +86,23 @@
   }
 }
 
-.approved{
+.approved {
   background-color: rgb(121, 175, 133);
-  color: white;;
+  color: white;
 }
-.tags{
+.tags {
   padding: 15px;
   display: flex;
   align-items: center;
   overflow: scroll;
   width: 100%;
 }
-.tags span{
+.tags span {
   padding: 5px;
   border-radius: 15px;
 }
 
-.row{
+.row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -110,6 +110,6 @@
   border-bottom: 1px solid #e0e0e0;
 }
 
-.row .input-text-field{
+.row .input-text-field {
   width: 80%;
 }

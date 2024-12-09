@@ -50,7 +50,7 @@ export default class LocalApiHandler {
       query,
       subject,
       specialty: LocalApiHandler.specialty,
-      type:"all"
+      type: 'all',
     };
     const response = await fetch(`${LocalApiHandler.apiUrl}/query`, {
       method: 'POST',

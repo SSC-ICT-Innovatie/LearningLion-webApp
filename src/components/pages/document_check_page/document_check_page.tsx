@@ -42,29 +42,32 @@ function DocumentCheckPage({
     const groupedFiles: {
       [key: string]: { subject: string; docs: fetchedDocument[] };
     } = {};
-  
+
     docs.forEach((document) => {
       const { uuid } = document;
-  
+
       if (!groupedFiles[uuid]) {
         groupedFiles[uuid] = { subject: document.subject, docs: [] };
       }
-  
-      if (!groupedFiles[uuid].docs.some((doc) => doc.uuid === document.uuid && doc.questionNumber === document.questionNumber)) {
+
+      if (
+        !groupedFiles[uuid].docs.some(
+          (doc) => doc.uuid === document.uuid && doc.questionNumber === document.questionNumber,
+        )
+      ) {
         groupedFiles[uuid].docs.push(document);
       }
       console.log('groupedFiles', groupedFiles);
     });
-  
+
     setFiles(groupedFiles);
   }, [docs]);
-
 
   const renderDocumentList = (renderDocs: fetchedDocument[]) => {
     // Filter unique documents based on uuid and question_number
     const uniqueDocs: fetchedDocument[] = [];
     const uniqueKeys = new Set<string>();
-  
+
     renderDocs.forEach((doc) => {
       const compositeKey = `${doc.uuid}-${doc.questionNumber || 'null'}`;
       if (!uniqueKeys.has(compositeKey)) {
@@ -72,7 +75,7 @@ function DocumentCheckPage({
         uniqueDocs.push(doc);
       }
     });
-  
+
     // Render the unique document list
     return (
       <>
@@ -102,22 +105,30 @@ function DocumentCheckPage({
           <h2>Selecteer een document</h2>
           <div className="selector__body">
             {Object.keys(files).map((uuid) => (
-              <div style={{ display: 'flex' }} key={uuid}>
+              <div
+                style={{ display: 'flex' }}
+                key={uuid}>
                 <Button
                   onClick={() => {
                     setfileSelected(uuid);
                     setPdfUrl(`${apiUrl}/document?uuid=${uuid}`);
                   }}>
-                    <div>
-                      <span>{files[uuid]?.subject || uuid}</span>
-                      <div className='tags'>
-                        {files[uuid]?.docs.map((doc) => (
-                            <span key={doc.id} className={ApprovedFiles.some((approvedDoc) => approvedDoc.id === doc.id) ? 'approved' : ''}>
-                            {doc.questionNumber ? `Vraag ${doc.questionNumber}` : 'Het hele bestand'}
-                            </span>
-                        ))}
-                      </div>
+                  <div>
+                    <span>{files[uuid]?.subject || uuid}</span>
+                    <div className="tags">
+                      {files[uuid]?.docs.map((doc) => (
+                        <span
+                          key={doc.id}
+                          className={
+                            ApprovedFiles.some((approvedDoc) => approvedDoc.id === doc.id)
+                              ? 'approved'
+                              : ''
+                          }>
+                          {doc.questionNumber ? `Vraag ${doc.questionNumber}` : 'Het hele bestand'}
+                        </span>
+                      ))}
                     </div>
+                  </div>
                 </Button>
                 <Checkbox
                   onClick={() => {
@@ -132,7 +143,7 @@ function DocumentCheckPage({
         </div>
       );
     }
-  
+
     const fileGroup = files[fileSelected];
     return (
       <div className="selector">
@@ -154,37 +165,38 @@ function DocumentCheckPage({
   return (
     <div className="documentsCheckPage">
       <h1>Controle</h1>
-      <p>Omdat LearningLion niet zeker weet ofdat dit echt de juiste relevante documenten zijn moet jij ze controleren</p>
-      <div className='row'>
-
-      <p>Je vraag: {question}</p>
-      <Button
-        purpose="sucess"
-        onClick={() => {
-          onSubmit(docs);
-        }}>
-        <span>Versturen</span>
-      </Button>
+      <p>
+        Omdat LearningLion niet zeker weet ofdat dit echt de juiste relevante documenten zijn moet
+        jij ze controleren
+      </p>
+      <div className="row">
+        <p>Je vraag: {question}</p>
+        <Button
+          purpose="sucess"
+          onClick={() => {
+            onSubmit(docs);
+          }}>
+          <span>Versturen</span>
+        </Button>
       </div>
-      <div className='row'>
+      <div className="row">
+        <InputTextField
+          label="Vraag meer document op"
+          id="document"
+          onChange={(val) => {
+            setnewQuery(val);
+          }}
+          value={newQuery}
+        />
 
-      <InputTextField
-        label="Vraag meer document op"
-        id="document"
-        onChange={(val) => {
-          setnewQuery(val);
-        }}
-        value={newQuery}
-      />
-
-      <Button
-        purpose="sucess"
-        onClick={() => {
-          getNewDocs(newQuery);
-          setnewQuery('');
-        }}>
-        <span>zoek</span>
-      </Button>
+        <Button
+          purpose="sucess"
+          onClick={() => {
+            getNewDocs(newQuery);
+            setnewQuery('');
+          }}>
+          <span>zoek</span>
+        </Button>
       </div>
       <div className="documentsCheckPage__body">
         <TextElement type="small gray subtitle">{docs.length.toString()} documenten</TextElement>
