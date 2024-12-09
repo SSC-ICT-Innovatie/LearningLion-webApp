@@ -8,6 +8,16 @@ interface TextProps {
 }
 
 function TextElement({ type, children, onClick, link }: TextProps) {
+  let presentableText = "";
+  if(children instanceof Array) {
+    presentableText = children.join(' ');
+  }
+  if(typeof children === 'string') {
+    presentableText = children;
+  }
+  else{
+    presentableText = `${children}`;
+  }
   if (type.includes('span')) {
     return (
       <span
@@ -23,7 +33,7 @@ function TextElement({ type, children, onClick, link }: TextProps) {
             }
           }
         }}>
-        {children}
+        {presentableText}
       </span>
     );
   }
@@ -43,7 +53,7 @@ function TextElement({ type, children, onClick, link }: TextProps) {
           href={link}
           target="_blank"
           rel="noreferrer">
-          {children}
+          {presentableText}
         </a>
       </button>
     );
@@ -62,7 +72,7 @@ function TextElement({ type, children, onClick, link }: TextProps) {
           }
         }
       }}>
-      <p>{children}</p>
+      <p>{presentableText}</p>
     </div>
   );
 }

@@ -38,46 +38,91 @@ function DocumentCheckPage({
   };
 
   useEffect(() => {
+    console.log('docs updated');
     const groupedFiles: {
       [key: string]: { subject: string; docs: fetchedDocument[] };
     } = {};
-
-    // Group files by UUID
+  
     docs.forEach((document) => {
-      const { uuid } = document; // Extract UUID and other data
-
+      const { uuid } = document;
+  
       if (!groupedFiles[uuid]) {
-        groupedFiles[uuid] = { subject: '', docs: [] }; // Initialize an object with subject and docs
+        groupedFiles[uuid] = { subject: document.subject, docs: [] };
       }
-      groupedFiles[uuid].subject = document.subject; // Add the subject to the UUID group
-      groupedFiles[uuid].docs.push(document); // Add the document (without UUID) to the UUID group
+  
+      if (!groupedFiles[uuid].docs.some((doc) => doc.uuid === document.uuid && doc.questionNumber === document.questionNumber)) {
+        groupedFiles[uuid].docs.push(document);
+      }
+      console.log('groupedFiles', groupedFiles);
     });
+  
     setFiles(groupedFiles);
   }, [docs]);
 
+
+  const renderDocumentList = (renderDocs: fetchedDocument[]) => {
+    // Filter unique documents based on uuid and question_number
+    const uniqueDocs: fetchedDocument[] = [];
+    const uniqueKeys = new Set<string>();
+  
+    renderDocs.forEach((doc) => {
+      const compositeKey = `${doc.uuid}-${doc.questionNumber || 'null'}`;
+      if (!uniqueKeys.has(compositeKey)) {
+        uniqueKeys.add(compositeKey);
+        uniqueDocs.push(doc);
+      }
+    });
+  
+    // Render the unique document list
+    return (
+      <>
+        {uniqueDocs.map((document: fetchedDocument) => (
+          <DocumentItem
+            key={document.id}
+            document={document}
+            onClick={() => {}}
+            onCheck={() => {
+              if (ApprovedFiles.some((doc) => doc.id === document.id)) {
+                setApprovedFiles(ApprovedFiles.filter((doc) => doc.id !== document.id));
+              } else {
+                setApprovedFiles([...ApprovedFiles, document]);
+              }
+            }}
+            checked={ApprovedFiles.some((doc) => doc.id === document.id)}
+          />
+        ))}
+      </>
+    );
+  };
+
   const renderSelector = () => {
-    if (fileSelected === '') {
+    if (fileSelected === '' || !files[fileSelected]) {
       return (
         <div className="selector">
           <h2>Selecteer een document</h2>
           <div className="selector__body">
-            {Object.keys(files).map((uuid, _index) => (
-              <div
-                style={{ display: 'flex' }}
-                key={uuid}>
+            {Object.keys(files).map((uuid) => (
+              <div style={{ display: 'flex' }} key={uuid}>
                 <Button
                   onClick={() => {
                     setfileSelected(uuid);
                     setPdfUrl(`${apiUrl}/document?uuid=${uuid}`);
                   }}>
-                  <span>{files[uuid]?.subject || uuid}</span>
+                    <div>
+                      <span>{files[uuid]?.subject || uuid}</span>
+                      <div className='tags'>
+                        {files[uuid]?.docs.map((doc) => (
+                            <span key={doc.id} className={ApprovedFiles.some((approvedDoc) => approvedDoc.id === doc.id) ? 'approved' : ''}>
+                            {doc.questionNumber ? `Vraag ${doc.questionNumber}` : 'Het hele bestand'}
+                            </span>
+                        ))}
+                      </div>
+                    </div>
                 </Button>
                 <Checkbox
                   onClick={() => {
                     const approvedDocs = docs.filter((doc) => doc.uuid === uuid);
-                    if (approvedDocs) {
-                      setApprovedFiles([...ApprovedFiles, ...approvedDocs]);
-                    }
+                    setApprovedFiles([...ApprovedFiles, ...approvedDocs]);
                   }}
                   value={ApprovedFiles.some((doc) => doc.uuid === uuid)}
                 />
@@ -87,6 +132,8 @@ function DocumentCheckPage({
         </div>
       );
     }
+  
+    const fileGroup = files[fileSelected];
     return (
       <div className="selector">
         <Button
@@ -97,22 +144,8 @@ function DocumentCheckPage({
           <span>Ga terug</span>
         </Button>
         <div className="selector__body">
-          <TextElement type="mid-heading bold">{files[fileSelected].subject}</TextElement>
-          {files[fileSelected].docs.map((document) => (
-            <DocumentItem
-              key={document.id}
-              document={document}
-              onClick={() => {}}
-              onCheck={() => {
-                if (ApprovedFiles.some((doc) => doc.id === document.id)) {
-                  setApprovedFiles(ApprovedFiles.filter((doc) => doc.id !== document.id));
-                } else {
-                  setApprovedFiles([...ApprovedFiles, document]);
-                }
-              }}
-              checked={ApprovedFiles.some((doc) => doc.id === document.id)}
-            />
-          ))}
+          <TextElement type="mid-heading bold">{fileGroup.subject}</TextElement>
+          {renderDocumentList(fileGroup.docs)}
         </div>
       </div>
     );
@@ -120,7 +153,10 @@ function DocumentCheckPage({
 
   return (
     <div className="documentsCheckPage">
-      <h1>DocumentCheckPage</h1>
+      <h1>Controle</h1>
+      <p>Omdat LearningLion niet zeker weet ofdat dit echt de juiste relevante documenten zijn moet jij ze controleren</p>
+      <div className='row'>
+
       <p>Je vraag: {question}</p>
       <Button
         purpose="sucess"
@@ -129,6 +165,9 @@ function DocumentCheckPage({
         }}>
         <span>Versturen</span>
       </Button>
+      </div>
+      <div className='row'>
+
       <InputTextField
         label="Vraag meer document op"
         id="document"
@@ -137,6 +176,7 @@ function DocumentCheckPage({
         }}
         value={newQuery}
       />
+
       <Button
         purpose="sucess"
         onClick={() => {
@@ -145,6 +185,7 @@ function DocumentCheckPage({
         }}>
         <span>zoek</span>
       </Button>
+      </div>
       <div className="documentsCheckPage__body">
         <TextElement type="small gray subtitle">{docs.length.toString()} documenten</TextElement>
         <div className="documentsWrapper">{renderSelector()}</div>

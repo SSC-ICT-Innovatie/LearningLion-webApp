@@ -45,10 +45,12 @@ export default class LocalApiHandler {
   }
 
   // Query Documents
-  async queryDocuments(query: string) {
+  async queryDocuments(query: string, subject: string) {
     const body = {
       query,
+      subject,
       specialty: LocalApiHandler.specialty,
+      type:"all"
     };
     const response = await fetch(`${LocalApiHandler.apiUrl}/query`, {
       method: 'POST',

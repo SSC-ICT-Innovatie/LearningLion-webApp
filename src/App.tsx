@@ -6,9 +6,10 @@ import ChatPage from './components/pages/chat_page.tsx';
 import createChatMessage from './util/chatMessageFactory.ts';
 import LocalApiHandler from './util/localApiHandler.ts';
 import DocumentCheckPage from './components/pages/document_check_page/document_check_page.tsx';
-import { createFetchDocument, fetchedDocument } from './util/documentFactory.ts';
+import { fetchedDocument } from './util/documentFactory.ts';
 import DefaultTemplate from './components/template/default-Template.tsx';
 import KamervragenTemplate from './components/template/kamervragen-Template.tsx';
+import { fetchedDocuments } from './util/KamerVragenUtil.ts';
 
 export interface chatMessage {
   id: Key;
@@ -91,43 +92,12 @@ function App() {
     setMessages((val) => val.concat(createChatMessage(combinedMessage, true)));
 
     // Fetch documents using the combined message
-    APIhandler.current
-      .queryDocuments(combinedMessage)
-      .then((response) => {
-        const { documents } = response;
-
-        // Map fetched documents to the desired format
-        const fetchedDocuments = documents.map(
-          (
-            document: {
-              metadata: {
-                subject: string;
-                UUID: string;
-                source: string;
-                page_number: number;
-                question_number: string;
-              };
-              text: string;
-              answer: string;
-            },
-            index: number,
-          ) =>
-            createFetchDocument(
-              document.metadata.subject,
-              '',
-              document.metadata.UUID,
-              document.metadata.source,
-              document.metadata.page_number,
-              document.text,
-              index,
-              document.metadata.question_number,
-              document.answer,
-            ),
-        );
-
-        // Update documents state
-        setDocumentsToCheck(fetchedDocuments);
-        setAPIcall(false);
+      fetchedDocuments(combinedMessage, specialty, APIhandler)
+      .then((response: fetchedDocument[]) => {
+          console.log("fetched documents");
+          console.log(response);
+          setDocumentsToCheck(response);
+          setAPIcall(false);
       })
       .catch((_error) => {
         // Handle errors if necessary
@@ -203,6 +173,7 @@ function App() {
           apiUrl={apiUrl}
           question={messages.at(messages.length - 1)?.message ?? ''}
           onSubmit={(documents: fetchedDocument[]) => {
+            console.log("on submit");
             setDocumentsToCheck([]);
             setAPIcall(true);
             setDocumentsChecked(documents);
@@ -213,39 +184,13 @@ function App() {
             }
           }}
           getNewDocs={(query: string) => {
-            APIhandler.current
-              .queryDocuments(query)
-              .then((response) => {
-                const { documents } = response;
-                const fetchedDocuments = documents.map(
-                  (
-                    document: {
-                      metadata: {
-                        subject: string;
-                        UUID: string;
-                        source: string;
-                        page_number: number;
-                        question_number: string;
-                      };
-                      text: string;
-                      answer: string;
-                    },
-                    index: number,
-                  ) =>
-                    createFetchDocument(
-                      document.metadata.subject,
-                      '',
-                      document.metadata.UUID,
-                      document.metadata.source,
-                      document.metadata.page_number,
-                      document.text,
-                      index,
-                      document.metadata.question_number,
-                      document.answer,
-                    ),
-                );
-                // filter already existing documents
-                const filteredDocuments = fetchedDocuments.filter(
+            console.log("get new docs");
+            setAPIcall(true);
+            fetchedDocuments(query, specialty, APIhandler)
+              .then((response: fetchedDocument[]) => {
+                setAPIcall(false);
+                console.log("fetched documents");
+                const filteredDocuments = response.filter(
                   (doc: { uuid: string }) =>
                     !documentsToCheck.some((documentToCheck) => documentToCheck.uuid === doc.uuid),
                 );

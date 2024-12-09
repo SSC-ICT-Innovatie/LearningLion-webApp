@@ -23,8 +23,7 @@ function DocumentItem({ document, onCheck, onClick, checked }: DocumentItemProps
             onClick(document.uuid);
           }
         }}>
-        <TextElement type="small gray subtitle">{document.text}</TextElement>
-        <TextElement type="medium black content">{document.answer}</TextElement>
+        <TextElement type="small black content">{document.text}</TextElement>
       </div>
       <Checkbox
         value={checked}
