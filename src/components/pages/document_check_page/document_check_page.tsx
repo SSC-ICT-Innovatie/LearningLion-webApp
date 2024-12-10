@@ -10,28 +10,44 @@ import Checkbox from '../../atoms/Checkbox/Checkbox.tsx';
 
 interface DocumentCheckPageProps {
   documents: fetchedDocument[];
+  checkedDocuments: fetchedDocument[];
   apiUrl: string;
   question: string;
   onSubmit: (documents: fetchedDocument[]) => void;
   getNewDocs: (query: string) => void;
+  onCheck: (document: fetchedDocument) => void;
+  onUncheck: (document: fetchedDocument) => void;
 }
 function DocumentCheckPage({
   documents,
+  checkedDocuments,
   apiUrl,
   question,
   onSubmit,
   getNewDocs,
+  onCheck,
+  onUncheck
 }: DocumentCheckPageProps) {
   const [pdfUrl, setPdfUrl] = useState('');
   const [docs, _setDocs] = useState(documents ?? []);
   const [files, setFiles] = useState<{
     [key: string]: { subject: string; docs: fetchedDocument[] };
   }>({});
-  const [ApprovedFiles, setApprovedFiles] = useState<fetchedDocument[]>([]);
   const [pdfShown, setPdfShown] = useState(false);
   const [fileSelected, setfileSelected] = useState('');
   const [newQuery, setnewQuery] = useState('');
 
+
+  useEffect(() => {
+    console.log(`checkedDocuments updated: ${checkedDocuments.length}`);
+    console.log(`checkedDocuments updated: ${checkedDocuments}`);
+  }, [checkedDocuments])
+  
+
+  useEffect(() => {
+    console.log(checkedDocuments)
+  }, [checkedDocuments])
+  
   const closePdfViewer = () => {
     setPdfShown(false);
     setPdfUrl('');
@@ -85,13 +101,17 @@ function DocumentCheckPage({
             document={document}
             onClick={() => {}}
             onCheck={() => {
-              if (ApprovedFiles.some((doc) => doc.id === document.id)) {
-                setApprovedFiles(ApprovedFiles.filter((doc) => doc.id !== document.id));
-              } else {
-                setApprovedFiles([...ApprovedFiles, document]);
+              if(checkedDocuments.some((doc) => doc.id === document.id)) {
+                console.log('onUncheck');
+                onUncheck(document);
+              }
+              else{
+              console.log('onCheck');
+              // filter on duplicate uuids
+              onCheck(document);
               }
             }}
-            checked={ApprovedFiles.some((doc) => doc.id === document.id)}
+            checked={checkedDocuments.some((doc) => doc.id === document.id)}
           />
         ))}
       </>
@@ -120,7 +140,7 @@ function DocumentCheckPage({
                         <span
                           key={doc.id}
                           className={
-                            ApprovedFiles.some((approvedDoc) => approvedDoc.id === doc.id)
+                            checkedDocuments.some((approvedDoc) => approvedDoc.id === doc.id)
                               ? 'approved'
                               : ''
                           }>
@@ -132,10 +152,27 @@ function DocumentCheckPage({
                 </Button>
                 <Checkbox
                   onClick={() => {
+                    if(checkedDocuments.some((doc) => doc.uuid === uuid)) {
+                      console.log('onUncheck');
+                      const approvedDocs = docs.filter((doc) => doc.uuid === uuid);
+                      approvedDocs.map(doc => onUncheck(doc))
+                    }
+                    else{
+                      // Make sure the question number is only once in the list
                     const approvedDocs = docs.filter((doc) => doc.uuid === uuid);
-                    setApprovedFiles([...ApprovedFiles, ...approvedDocs]);
+                    // filter on duplicate question numbers
+                    const questionNumbers = new Set<string>();
+                    const nonDuplicateDocs:fetchedDocument[] = [];
+                    approvedDocs.forEach((doc) => {
+                      if (!questionNumbers.has(doc.questionNumber)) {
+                        questionNumbers.add(doc.questionNumber);
+                        nonDuplicateDocs.push(doc);
+                      }
+                    });
+                    nonDuplicateDocs.map(doc => onCheck(doc))
+                    }
                   }}
-                  value={ApprovedFiles.some((doc) => doc.uuid === uuid)}
+                  value={checkedDocuments.some((doc) => doc.uuid === uuid)}
                 />
               </div>
             ))}

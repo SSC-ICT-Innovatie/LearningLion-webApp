@@ -14,6 +14,14 @@ function SelectBox({ options, placeholder, onSubmit }: SelectBoxProps): JSX.Elem
   const [selectedItem, setSelectedItem] = useState('');
 
   useEffect(() => {
+    if (options.length !== 0 && selectedItem === ''){
+      // Auto select first option as default
+      setSelectedItem(options[0]);
+      onSubmit(options[0]);
+    }
+  }, [options, onSubmit, selectedItem]);
+
+  useEffect(() => {
     onSubmit(selectedItem);
   }, [onSubmit, selectedItem]);
 

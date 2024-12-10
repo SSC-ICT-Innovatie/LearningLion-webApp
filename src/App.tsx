@@ -31,13 +31,30 @@ function App() {
   const [DocumentsChecked, setDocumentsChecked] = useState<fetchedDocument[]>([]);
   const [documentsToCheck, setDocumentsToCheck] = useState<fetchedDocument[]>([]);
   const [allSpecialties, setAllSpecialties] = useState([]);
-  const [LLMModel, setLLMModel] = useState('BramVanRoy/fietje-2-chat');
-  const [availableModels, setAvailableModels] = useState([]);
+  const [LLMModel, _setLLMModel] = useState('BramVanRoy/fietje-2-chat');
+  // const [availableModels, setAvailableModels] = useState([]);
+  const [datascopes, setDatascopes] = useState([]);
   const [jsonBodyPrompt, setJsonBodyPrompt] = useState({});
+  const [dataScope, setDataScope] = useState('default');
 
   useEffect(() => {
     APIhandler.current.setLLMModel(LLMModel);
   }, [LLMModel]);
+
+  useEffect(() => {
+    APIhandler.current.setDataScope(dataScope);
+  }, [dataScope])
+  
+  // useEffect(() => {
+  //   // filter documents on duplicates
+  //   const filteredDocuments = documentsToCheck.filter(
+  //     (doc: { uuid: string }) =>
+  //       !documentsToCheck.some((documentToCheck) => documentToCheck.uuid === doc.uuid),
+  //   );
+  //   setDocumentsToCheck((prev) => [...prev, ...filteredDocuments]);
+  // }, [documentsToCheck])
+
+
 
   useEffect(() => {
     APIhandler.current.setApiUrl(apiUrl);
@@ -45,8 +62,8 @@ function App() {
     APIhandler.current.getSpecialties().then((response) => {
       setAllSpecialties(response);
     });
-    APIhandler.current.getAvailableModles().then((response) => {
-      setAvailableModels(response);
+    APIhandler.current.getDataScopes().then((response) => {
+      setDatascopes(response);
     });
   }, [apiUrl, apiToken]);
 
@@ -152,8 +169,9 @@ function App() {
       <Header
         chatPage={initalized}
         specialty={specialty}
-        setLLMModel={(model: SetStateAction<string>) => setLLMModel(model)}
-        models={availableModels}
+        setDataScope={(scope: SetStateAction<string>) => setDataScope(scope)}
+        // setLLMModel={(model: SetStateAction<string>) => setLLMModel(model)}
+        datascope={datascopes}
       />
       {!initalized && (
         <HomePage
@@ -166,12 +184,26 @@ function App() {
           specialties={allSpecialties}
         />
       )}
-      {documentsToCheck.length > 0 && initalized && !APIcall && (
+      {documentsToCheck.length > 0 && initalized && (
         <DocumentCheckPage
           key={documentsToCheck.map((doc) => doc.uuid).join('-')}
+          checkedDocuments={DocumentsChecked}
           documents={documentsToCheck}
           apiUrl={apiUrl}
           question={messages.at(messages.length - 1)?.message ?? ''}
+          onCheck={(document: fetchedDocument) => {
+              console.log('on check');
+              setDocumentsChecked((prev) => [...prev, document]
+            )
+            console.log(`checkedDocuments updated: ${DocumentsChecked.length}`);
+          }
+        }
+        onUncheck={(document: fetchedDocument) => {
+          console.log('on uncheck');
+          setDocumentsChecked((prev) => prev.filter((doc) => doc.uuid !== document.uuid));
+          console.log(`checkedDocuments updated: ${DocumentsChecked.length}`);
+        }
+      }
           onSubmit={(documents: fetchedDocument[]) => {
             console.log('on submit');
             setDocumentsToCheck([]);

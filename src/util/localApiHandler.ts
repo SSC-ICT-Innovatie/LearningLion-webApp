@@ -7,6 +7,8 @@ interface LLMFiles {
 }
 
 export default class LocalApiHandler {
+  static datascope = 'tiny';
+
   static apiUrl = '';
 
   static apiToken = '';
@@ -14,6 +16,10 @@ export default class LocalApiHandler {
   static specialty = 'None';
 
   static model = 'BramVanroy/fietje-2-chat';
+
+  setDataScope(dataScope: string) {
+    LocalApiHandler.datascope = dataScope;
+  }
 
   setApiUrl(url: string) {
     LocalApiHandler.apiUrl = url;
@@ -44,6 +50,19 @@ export default class LocalApiHandler {
     return data;
   }
 
+  async getDataScopes() {
+    const response = await fetch(`${LocalApiHandler.apiUrl}/datascopes`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${LocalApiHandler.apiToken}`,
+        'ngrok-skip-browser-warning': 'Any value',
+      },
+    });
+    const data = await response.json();
+    return data;
+  }
+
   // Query Documents
   async queryDocuments(query: string, subject: string) {
     const body = {
@@ -51,6 +70,7 @@ export default class LocalApiHandler {
       subject,
       specialty: LocalApiHandler.specialty,
       type: 'all',
+      scope: LocalApiHandler.datascope,
     };
     const response = await fetch(`${LocalApiHandler.apiUrl}/query`, {
       method: 'POST',

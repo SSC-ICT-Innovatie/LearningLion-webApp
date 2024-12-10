@@ -5,11 +5,11 @@ import './header.css';
 interface HeaderProps {
   chatPage: boolean;
   specialty?: string;
-  setLLMModel: (_model: string) => void;
-  models: string[];
+  setDataScope: (scope: string) => void;
+  datascope: string[];
 }
 
-function Header({ chatPage, specialty, setLLMModel, models }: HeaderProps) {
+function Header({ chatPage, specialty, setDataScope, datascope }: HeaderProps) {
   return (
     <div className="header">
       {chatPage && (
@@ -26,9 +26,9 @@ function Header({ chatPage, specialty, setLLMModel, models }: HeaderProps) {
         </>
       )}
       <SelectBox
-        options={models}
+        options={datascope}
         placeholder="Geen selectie"
-        onSubmit={(val: string) => setLLMModel(val)}
+        onSubmit={(val: string) => setDataScope(val)}
       />
     </div>
   );
