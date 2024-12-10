@@ -9,7 +9,6 @@ export const fetchedDocuments = async (
   APIHandler: React.MutableRefObject<LocalApiHandler>,
 ): Promise<fetchedDocument[]> =>
   APIHandler.current.queryDocuments(prompt, subject).then((response) => {
-    console.log('fetched documents');
     const { documents } = response;
     const docs = documents.map(
       (
@@ -48,10 +47,5 @@ export const fetchedDocuments = async (
         seen.add(doc.UUID);
       }
     });
-
-    if (duplicates.size > 0) {
-      console.log('Duplicates:', duplicates.size);
-      console.log('Duplicates:', duplicates);
-    }
     return docs;
   });

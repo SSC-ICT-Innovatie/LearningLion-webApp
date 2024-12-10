@@ -26,7 +26,7 @@ function DocumentCheckPage({
   onSubmit,
   getNewDocs,
   onCheck,
-  onUncheck
+  onUncheck,
 }: DocumentCheckPageProps) {
   const [pdfUrl, setPdfUrl] = useState('');
   const [docs, _setDocs] = useState(documents ?? []);
@@ -37,24 +37,16 @@ function DocumentCheckPage({
   const [fileSelected, setfileSelected] = useState('');
   const [newQuery, setnewQuery] = useState('');
 
+  useEffect(() => {}, [checkedDocuments]);
 
-  useEffect(() => {
-    console.log(`checkedDocuments updated: ${checkedDocuments.length}`);
-    console.log(`checkedDocuments updated: ${checkedDocuments}`);
-  }, [checkedDocuments])
-  
+  useEffect(() => {}, [checkedDocuments]);
 
-  useEffect(() => {
-    console.log(checkedDocuments)
-  }, [checkedDocuments])
-  
   const closePdfViewer = () => {
     setPdfShown(false);
     setPdfUrl('');
   };
 
   useEffect(() => {
-    console.log('docs updated');
     const groupedFiles: {
       [key: string]: { subject: string; docs: fetchedDocument[] };
     } = {};
@@ -73,7 +65,6 @@ function DocumentCheckPage({
       ) {
         groupedFiles[uuid].docs.push(document);
       }
-      console.log('groupedFiles', groupedFiles);
     });
 
     setFiles(groupedFiles);
@@ -101,14 +92,10 @@ function DocumentCheckPage({
             document={document}
             onClick={() => {}}
             onCheck={() => {
-              if(checkedDocuments.some((doc) => doc.id === document.id)) {
-                console.log('onUncheck');
+              if (checkedDocuments.some((doc) => doc.id === document.id)) {
                 onUncheck(document);
-              }
-              else{
-              console.log('onCheck');
-              // filter on duplicate uuids
-              onCheck(document);
+              } else {
+                onCheck(document);
               }
             }}
             checked={checkedDocuments.some((doc) => doc.id === document.id)}
@@ -152,24 +139,22 @@ function DocumentCheckPage({
                 </Button>
                 <Checkbox
                   onClick={() => {
-                    if(checkedDocuments.some((doc) => doc.uuid === uuid)) {
-                      console.log('onUncheck');
+                    if (checkedDocuments.some((doc) => doc.uuid === uuid)) {
                       const approvedDocs = docs.filter((doc) => doc.uuid === uuid);
-                      approvedDocs.map(doc => onUncheck(doc))
-                    }
-                    else{
+                      approvedDocs.map((doc) => onUncheck(doc));
+                    } else {
                       // Make sure the question number is only once in the list
-                    const approvedDocs = docs.filter((doc) => doc.uuid === uuid);
-                    // filter on duplicate question numbers
-                    const questionNumbers = new Set<string>();
-                    const nonDuplicateDocs:fetchedDocument[] = [];
-                    approvedDocs.forEach((doc) => {
-                      if (!questionNumbers.has(doc.questionNumber)) {
-                        questionNumbers.add(doc.questionNumber);
-                        nonDuplicateDocs.push(doc);
-                      }
-                    });
-                    nonDuplicateDocs.map(doc => onCheck(doc))
+                      const approvedDocs = docs.filter((doc) => doc.uuid === uuid);
+                      // filter on duplicate question numbers
+                      const questionNumbers = new Set<string>();
+                      const nonDuplicateDocs: fetchedDocument[] = [];
+                      approvedDocs.forEach((doc) => {
+                        if (!questionNumbers.has(doc.questionNumber)) {
+                          questionNumbers.add(doc.questionNumber);
+                          nonDuplicateDocs.push(doc);
+                        }
+                      });
+                      nonDuplicateDocs.map((doc) => onCheck(doc));
                     }
                   }}
                   value={checkedDocuments.some((doc) => doc.uuid === uuid)}

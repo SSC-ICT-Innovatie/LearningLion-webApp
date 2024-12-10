@@ -43,8 +43,8 @@ function App() {
 
   useEffect(() => {
     APIhandler.current.setDataScope(dataScope);
-  }, [dataScope])
-  
+  }, [dataScope]);
+
   // useEffect(() => {
   //   // filter documents on duplicates
   //   const filteredDocuments = documentsToCheck.filter(
@@ -53,8 +53,6 @@ function App() {
   //   );
   //   setDocumentsToCheck((prev) => [...prev, ...filteredDocuments]);
   // }, [documentsToCheck])
-
-
 
   useEffect(() => {
     APIhandler.current.setApiUrl(apiUrl);
@@ -111,8 +109,6 @@ function App() {
     // Fetch documents using the combined message
     fetchedDocuments(combinedMessage, specialty, APIhandler)
       .then((response: fetchedDocument[]) => {
-        console.log('fetched documents');
-        console.log(response);
         setDocumentsToCheck(response);
         setAPIcall(false);
       })
@@ -192,20 +188,12 @@ function App() {
           apiUrl={apiUrl}
           question={messages.at(messages.length - 1)?.message ?? ''}
           onCheck={(document: fetchedDocument) => {
-              console.log('on check');
-              setDocumentsChecked((prev) => [...prev, document]
-            )
-            console.log(`checkedDocuments updated: ${DocumentsChecked.length}`);
-          }
-        }
-        onUncheck={(document: fetchedDocument) => {
-          console.log('on uncheck');
-          setDocumentsChecked((prev) => prev.filter((doc) => doc.uuid !== document.uuid));
-          console.log(`checkedDocuments updated: ${DocumentsChecked.length}`);
-        }
-      }
+            setDocumentsChecked((prev) => [...prev, document]);
+          }}
+          onUncheck={(document: fetchedDocument) => {
+            setDocumentsChecked((prev) => prev.filter((doc) => doc.uuid !== document.uuid));
+          }}
           onSubmit={(documents: fetchedDocument[]) => {
-            console.log('on submit');
             setDocumentsToCheck([]);
             setAPIcall(true);
             setDocumentsChecked(documents);
@@ -216,12 +204,10 @@ function App() {
             }
           }}
           getNewDocs={(query: string) => {
-            console.log('get new docs');
             setAPIcall(true);
             fetchedDocuments(query, specialty, APIhandler)
               .then((response: fetchedDocument[]) => {
                 setAPIcall(false);
-                console.log('fetched documents');
                 const filteredDocuments = response.filter(
                   (doc: { uuid: string }) =>
                     !documentsToCheck.some((documentToCheck) => documentToCheck.uuid === doc.uuid),
