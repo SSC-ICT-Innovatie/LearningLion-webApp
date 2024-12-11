@@ -127,7 +127,11 @@ function DocumentCheckPage({
                         <span
                           key={doc.id}
                           className={
-                            checkedDocuments.some((approvedDoc) => approvedDoc.id === doc.id)
+                            checkedDocuments.some(
+                              (approvedDoc) =>
+                                approvedDoc.uuid === doc.uuid &&
+                                approvedDoc.questionNumber === doc.questionNumber,
+                            )
                               ? 'approved'
                               : ''
                           }>
@@ -187,10 +191,7 @@ function DocumentCheckPage({
   return (
     <div className="documentsCheckPage">
       <h1>Controle</h1>
-      <p>
-        Omdat LearningLion niet zeker weet ofdat dit echt de juiste relevante documenten zijn moet
-        jij ze controleren
-      </p>
+      <p>Selecteer alleen resultaten die relevant zijn voor de kamervragen</p>
       <div className="row">
         <p>Je vraag: {question}</p>
         <Button
@@ -203,7 +204,7 @@ function DocumentCheckPage({
       </div>
       <div className="row">
         <InputTextField
-          label="Vraag meer document op"
+          label="Zoek meer documenten (Trefwoorden of korte zinnen)"
           id="document"
           onChange={(val) => {
             setnewQuery(val);

@@ -59,22 +59,24 @@ function PdfViewer({ url, onLoaded }: PdfViewerProps) {
   );
   return (
     <div style={{ flex: 1 }}>
-      <Document
-        className="custom-pdf-document"
-        file={pdfData}
-        onLoadSuccess={onDocumentLoadSuccess}
-        error={renderErrorpdf}
-        loading={renderLoadingpdf}
-        noData={renderNopdf}>
-        {/* Render all pages by mapping through each page number */}
-        {Array.from(new Array(numPages), (_, index) => (
-          <Page
-            key={`page_${index + 1}`}
-            pageNumber={index + 1}
-            scale={scale}
-          />
-        ))}
-      </Document>
+      {pdfData === null || pdfData.type !== 'application/pdf' ? null : (
+        <Document
+          className="custom-pdf-document"
+          file={pdfData}
+          onLoadSuccess={onDocumentLoadSuccess}
+          error={renderErrorpdf}
+          loading={renderLoadingpdf}
+          noData={renderNopdf}>
+          {/* Render all pages by mapping through each page number */}
+          {Array.from(new Array(numPages), (_, index) => (
+            <Page
+              key={`page_${index + 1}`}
+              pageNumber={index + 1}
+              scale={scale}
+            />
+          ))}
+        </Document>
+      )}
     </div>
   );
 }

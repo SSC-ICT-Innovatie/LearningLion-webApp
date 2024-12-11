@@ -1,17 +1,14 @@
 import { useState } from 'react';
 import TextElement from '../../atoms/TextElement/TextElement.tsx';
 import './chatmessage.css';
-import retryIcon from '../../../assets/retry.svg';
-import Button from '../../atoms/button/Button.tsx';
 
 interface ChatMessageProps {
   fromUser?: boolean;
   username?: string;
   message: string;
   sources?: string[];
-  retryFunction?: () => void;
 }
-function ChatMessage({ fromUser, username, message, sources, retryFunction }: ChatMessageProps) {
+function ChatMessage({ fromUser, username, message, sources }: ChatMessageProps) {
   const [showSources, setShowSources] = useState(false);
 
   const renderSources = () => {
@@ -39,47 +36,29 @@ function ChatMessage({ fromUser, username, message, sources, retryFunction }: Ch
             {message}
           </TextElement>
         </div>
-        <div className="wrap--actions">
-          <div className="action">
-            {/* show svg */}
-            {retryFunction && (
-              <Button
-                className="retry-button"
-                onClick={retryFunction}
-                aria-label="Retry">
-                <img
-                  style={{ height: '20px' }}
-                  src={retryIcon}
-                  alt="retry"
-                  className="retry-icon"
-                />
-              </Button>
+        {sources && sources.length > 0 && (
+          <div className="chat-message__sources">
+            <div
+              className="chat-message__sources-header"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setShowSources(!showSources);
+                }
+              }}>
+              <TextElement type="chatmessage chat-message__sources__text">
+                Gebruikte bronnen
+              </TextElement>
+              <div className="gylph">{showSources ? '▲' : '▼'}</div>
+            </div>
+            {showSources && (
+              <div className="chat-message__sources__container">
+                {showSources && renderSources()}
+              </div>
             )}
           </div>
-          {sources && sources.length > 0 && (
-            <div className="chat-message__sources">
-              <div
-                className="chat-message__sources-header"
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    setShowSources(!showSources);
-                  }
-                }}>
-                <TextElement type="chatmessage chat-message__sources__text">
-                  Gebruikte bronnen
-                </TextElement>
-                <div className="gylph">{showSources ? '▲' : '▼'}</div>
-              </div>
-              {showSources && (
-                <div className="chat-message__sources__container">
-                  {showSources && renderSources()}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
@@ -89,7 +68,6 @@ ChatMessage.defaultProps = {
   fromUser: false,
   username: '',
   sources: [],
-  retryFunction: () => {},
 };
 
 export default ChatMessage;

@@ -19,9 +19,9 @@ function KamervragenTemplate({ onSubmit }: KamervragenTemplateProps) {
   const [news, setNews] = useState('');
   return (
     <div className="question-section">
-      <TextElement type="mid-heading bold">Stel de kamervragen aan Learning Lion</TextElement>
+      <TextElement type="mid-heading bold">Stel je kamervragen aan Learning Lion</TextElement>
       <InputTextField
-        label="inleiding kamervraag"
+        label="Inleiding kamervraag"
         id="inleiding"
         onChange={(val) => {
           setInleiding(val);
@@ -29,7 +29,7 @@ function KamervragenTemplate({ onSubmit }: KamervragenTemplateProps) {
         value={inleiding}
       />
       <InputTextField
-        label="vragen"
+        label="Vragen"
         id="vraag"
         onChange={(val) => {
           setVragen(val);
@@ -37,7 +37,7 @@ function KamervragenTemplate({ onSubmit }: KamervragenTemplateProps) {
         value={vragen}
       />
       <InputTextField
-        label="departement sentiment"
+        label="Departement sentiment"
         id="departmentSentiment"
         onChange={(val) => {
           setDepartmentSentiment(val);
@@ -45,7 +45,7 @@ function KamervragenTemplate({ onSubmit }: KamervragenTemplateProps) {
         value={departmentSentiment}
       />
       <InputTextField
-        label="Relevante nieuws feiten"
+        label="Relevante nieuwsfeiten (in eigen woorden)"
         id="news"
         onChange={(val) => {
           setNews(val);

@@ -9,3 +9,15 @@
   align-self: flex-start;
   justify-content: flex-end;
 }
+
+.scope {
+  justify-self: flex-end;
+  align-self: flex-end;
+  width: 10%;
+}
+
+.title {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}

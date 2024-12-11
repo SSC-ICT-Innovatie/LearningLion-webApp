@@ -4,25 +4,37 @@ import TextElement from '../atoms/TextElement/TextElement.tsx';
 import ChatMessage from '../molecules/chatmessage/chatmessage.tsx';
 import { chatMessage } from '../../App.tsx';
 import { Button } from '../atoms/button/Button.tsx';
+import KamervragenTemplate from '../template/kamervragen-Template.tsx';
 
 interface chatPageProps {
   messages: chatMessage[];
-  newMessage: (message: string) => void;
+  newMessage: (
+    message:
+      | string
+      | {
+          inleiding: string;
+          vragen: string;
+          departmentSentiment: string;
+          news: string;
+        },
+  ) => void;
   disabled: boolean;
-  emptyChat: () => void;
   errorOccured: boolean;
   retryFailure: () => void;
-  regenerateMessage: () => void;
+  isTyping: boolean;
+  isSearching: boolean;
+  specialty: string;
 }
 
 function ChatPage({
   messages,
   newMessage,
   disabled = false,
-  emptyChat,
   errorOccured = false,
   retryFailure,
-  regenerateMessage,
+  isTyping,
+  isSearching,
+  specialty,
 }: chatPageProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -42,9 +54,6 @@ function ChatPage({
         height: 'auto',
         width: '100%',
       }}>
-      <Button onClick={emptyChat}>
-        <p>Verwijder chat</p>
-      </Button>
       <div
         style={{
           display: 'flex',
@@ -62,13 +71,15 @@ function ChatPage({
             message={message.message}
             username={message.username}
             sources={message.sources}
-            retryFunction={regenerateMessage}
           />
         ))}
         <div ref={messagesEndRef} />
       </div>
-      {disabled && (
+      {disabled && isTyping && (
         <TextElement type="small bold left">Learning Lion is aan het typen...</TextElement>
+      )}
+      {disabled && isSearching && (
+        <TextElement type="small bold left">Learning Lion is aan het zoeken...</TextElement>
       )}
       {errorOccured && (
         <div>
@@ -76,12 +87,16 @@ function ChatPage({
           <Button onClick={retryFailure}>Probeer het opnieuw</Button>
         </div>
       )}
-      <QuestionBar
-        disabled={disabled}
-        onSubmit={(values: string) => {
-          newMessage(values);
-        }}
-      />
+      {specialty === 'KamerVragen' ? (
+        <KamervragenTemplate onSubmit={(_values) => newMessage(_values)} />
+      ) : (
+        <QuestionBar
+          disabled={disabled}
+          onSubmit={(values: string) => {
+            newMessage(values);
+          }}
+        />
+      )}
 
       <TextElement type="regular bold center">Learning Lion kan fouten maken</TextElement>
     </div>

@@ -71,7 +71,9 @@ function TextElement({ type, children, onClick, link }: TextProps) {
           }
         }
       }}>
-      <p>{presentableText}</p>
+      {presentableText.split('\\n').map((line) => (
+        <p key={line}>{line}</p>
+      ))}
     </div>
   );
 }

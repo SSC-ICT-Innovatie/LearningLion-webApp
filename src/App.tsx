@@ -36,6 +36,8 @@ function App() {
   const [datascopes, setDatascopes] = useState([]);
   const [jsonBodyPrompt, setJsonBodyPrompt] = useState({});
   const [dataScope, setDataScope] = useState('default');
+  const [isSearching, setIsSearching] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
     APIhandler.current.setLLMModel(LLMModel);
@@ -69,10 +71,6 @@ function App() {
     APIhandler.current.setSpecialty(specialty);
   }, [specialty]);
 
-  const emptyChat = () => {
-    setMessages([]);
-  };
-
   const handleMessage = (
     message:
       | string
@@ -90,6 +88,7 @@ function App() {
 
     // Set API call status
     setAPIcall(true);
+    setIsSearching(true);
 
     // Combine message if it's an object, otherwise use it as-is
     const combinedMessage =
@@ -111,10 +110,12 @@ function App() {
       .then((response: fetchedDocument[]) => {
         setDocumentsToCheck(response);
         setAPIcall(false);
+        setIsSearching(false);
       })
       .catch((_error) => {
         // Handle errors if necessary
         setAPIcall(false); // Ensure the API call flag is reset on error
+        setIsSearching(false);
       });
   };
   const callLlm = (query: string | object, documents: fetchedDocument[]) => {
@@ -123,12 +124,12 @@ function App() {
       .then((response) => {
         if (response === false) {
           setErrorOccured(true);
-          setAPIcall(false);
         } else {
           setErrorOccured(false);
           setMessages((val) => val.concat(createChatMessage(response.output, false)));
-          setAPIcall(false);
         }
+        setAPIcall(false);
+        setIsTyping(false);
       })
       .catch((_error: Error) => {});
   };
@@ -168,6 +169,7 @@ function App() {
         setDataScope={(scope: SetStateAction<string>) => setDataScope(scope)}
         // setLLMModel={(model: SetStateAction<string>) => setLLMModel(model)}
         datascope={datascopes}
+        selectedDatascope={dataScope}
       />
       {!initalized && (
         <HomePage
@@ -196,6 +198,7 @@ function App() {
           onSubmit={(documents: fetchedDocument[]) => {
             setDocumentsToCheck([]);
             setAPIcall(true);
+            setIsTyping(true);
             setDocumentsChecked(documents);
             if (Object.keys(jsonBodyPrompt).length > 0) {
               callLlm(jsonBodyPrompt, documents);
@@ -205,9 +208,11 @@ function App() {
           }}
           getNewDocs={(query: string) => {
             setAPIcall(true);
+            setIsSearching(true);
             fetchedDocuments(query, specialty, APIhandler)
               .then((response: fetchedDocument[]) => {
                 setAPIcall(false);
+                setIsSearching(false);
                 const filteredDocuments = response.filter(
                   (doc: { uuid: string }) =>
                     !documentsToCheck.some((documentToCheck) => documentToCheck.uuid === doc.uuid),
@@ -216,6 +221,7 @@ function App() {
               })
               .catch((_error) => {
                 setAPIcall(false);
+                setIsSearching(false);
               });
           }}
         />
@@ -224,18 +230,19 @@ function App() {
         <ChatPage
           messages={messages}
           disabled={APIcall}
-          emptyChat={emptyChat}
-          newMessage={(message: string) => {
+          newMessage={(
+            message:
+              | string
+              | {
+                  inleiding: string;
+                  vragen: string;
+                  departmentSentiment: string;
+                  news: string;
+                },
+          ) => {
             handleMessage(message);
             setErrorOccured(false);
             setDocumentsChecked([]);
-          }}
-          regenerateMessage={() => {
-            if (Object.keys(jsonBodyPrompt).length > 0) {
-              callLlm(jsonBodyPrompt, DocumentsChecked);
-            } else {
-              callLlm(messages.at(messages.length - 1)?.message ?? '', DocumentsChecked);
-            }
           }}
           errorOccured={errorOccured}
           retryFailure={() => {
@@ -246,6 +253,9 @@ function App() {
               callLlm(messages.at(messages.length - 1)?.message ?? '', DocumentsChecked);
             }
           }}
+          isSearching={isSearching}
+          isTyping={isTyping}
+          specialty={specialty}
         />
       )}
     </div>
