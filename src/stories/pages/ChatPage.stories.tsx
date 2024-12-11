@@ -26,9 +26,14 @@ const meta: Meta<typeof ChatPage> = {
         id: ''
       },
     ],
-    newMessage: (message: string) => alert(`Nieuw bericht: ${message}`),
+    newMessage: (message: string | { inleiding: string; vragen: string; departmentSentiment: string; news: string; }) => {
+      if (typeof message === 'string') {
+        alert(`Nieuw bericht: ${message}`);
+      } else {
+        alert(`Nieuw bericht: ${JSON.stringify(message)}`);
+      }
+    },
     disabled: false,
-    emptyChat: () => alert('Chat geleegd'),
   },
 } satisfies Meta<typeof ChatPage>;
 
