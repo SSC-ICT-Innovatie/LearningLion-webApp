@@ -8,6 +8,10 @@ interface TextProps {
 }
 
 function TextElement({ type, children, onClick, link }: TextProps) {
+  const convertHex = (hex: string) =>
+    hex.replace(/\\x([0-9A-Fa-f]{2})/g, (_match, hexCode) =>
+      String.fromCharCode(parseInt(hexCode, 16)),
+    );
   let presentableText = '';
   if (children instanceof Array) {
     presentableText = children.join(' ');
@@ -57,6 +61,7 @@ function TextElement({ type, children, onClick, link }: TextProps) {
       </button>
     );
   }
+  presentableText = convertHex(presentableText);
   return (
     <div
       className={type}
